@@ -1,0 +1,34 @@
+// ── Zone ──────────────────────────────────────────────────────────────
+// Seed-only. Adding a new zone later requires a migration (ALTER TYPE ADD VALUE).
+// PLACEHOLDER — confirm actual zone names before seeding.
+
+enum Zone {
+  WISC
+  SISC
+  NISC
+}
+
+// ── UserType ──────────────────────────────────────────────────────────
+// Used only for notification targeting. No permission implications —
+// permissions are assigned individually via UserPermission, never bundled
+// by role.
+
+enum UserType {
+  MANAGER
+  SUPERVISOR
+  ENGINEER
+  TECHNICIAN
+  HELPER
+}
+
+// ── Department ────────────────────────────────────────────────────────
+
+enum Department {
+  QUALITY
+  OPERATIONS
+  ADMIN
+  SALES
+  IT
+  TESTING
+  FINANCE
+}

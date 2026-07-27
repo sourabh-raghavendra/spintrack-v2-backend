@@ -1,0 +1,33 @@
+// ── Permission ────────────────────────────────────────────────────────
+// Seed-only, same as before — no admin-editable permissions.
+
+model Permission {
+  id          String  @id @default(cuid())
+  key         String  @unique // e.g. "checksheet:write", "orders:view_zone_wic"
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  users UserPermission[]
+
+  @@map("permissions")
+}
+
+// ── UserPermission ────────────────────────────────────────────────────
+
+model UserPermission {
+  id           String @id @default(cuid())
+  userId       String
+  permissionId String
+
+  createdAt DateTime @default(now())
+
+  // Relations
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionId]) // a user can't have the same permission twice
+  @@map("user_permissions")
+}

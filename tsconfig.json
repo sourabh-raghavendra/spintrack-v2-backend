@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "outDir": "dist",
+    "rootDirs": ["src", "tests"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "typeRoots": ["./node_modules/@types"],
+    "types": [
+      "node",
+      "express",
+      "cors",
+      "compression",
+      "cookie-parser",
+      "bcryptjs",
+      "jsonwebtoken",
+      "uuid",
+      "multer",
+      "nodemailer",
+      "supertest"
+    ]
+  },
+  "include": ["src", "tests", "prisma.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}

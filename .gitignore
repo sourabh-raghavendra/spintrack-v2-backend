@@ -46,3 +46,6 @@ coverage/
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Prisma Generated Client
+src/generated/

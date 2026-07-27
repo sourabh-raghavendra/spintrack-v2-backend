@@ -1,0 +1,29 @@
+// ── User ─────────────────────────────────────────────────────────────
+// No Profile split — this is the only identity table for internal staff.
+// No sessions/refresh tokens — stateless JWT only, verified per-request.
+// No concurrent-session enforcement — a user may be logged in from
+// multiple devices simultaneously.
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  employeeCode String     @unique // login identifier — employees only
+  email        String?    @unique // optional, not used for login
+  password     String
+  zone         Zone
+  userType     UserType
+  department   Department
+  isAdmin      Boolean    @default(false) // seed-only — never set via any API/UI path
+  isActive     Boolean    @default(true)
+
+  lastLoginAt DateTime?
+  deletedAt   DateTime? // soft delete
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  permissions UserPermission[]
+
+  @@map("users")
+}
