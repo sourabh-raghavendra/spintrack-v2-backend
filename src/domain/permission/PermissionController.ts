@@ -1,6 +1,6 @@
 // src/domain/permission/PermissionController.ts
 import { PermissionService } from "./PermissionService";
-import { Permission, Permissions } from "./permissions";
+import { PERMISSIONS, Permission } from "./permissions";
 import { PermissionRecord } from "./IPermissionRepository";
 import { BadRequestError } from "../../errors/HttpError";
 import { ErrorCodes } from "../../errors/errorCodes";
@@ -31,7 +31,7 @@ export class PermissionController {
 
   // ── Assign a permission to a user ─────────────────────────────────
   async assignPermission(input: AssignRevokePermissionInput): Promise<void> {
-    const validKeys = Object.values(Permissions) as Permission[];
+    const validKeys = Object.values(PERMISSIONS) as Permission[];
     if (!validKeys.includes(input.permissionKey)) {
       throw new BadRequestError(
         `Invalid permission key: ${input.permissionKey}`,
@@ -46,7 +46,7 @@ export class PermissionController {
 
   // ── Revoke a permission from a user ──────────────────────────────
   async revokePermission(input: AssignRevokePermissionInput): Promise<void> {
-    const validKeys = Object.values(Permissions) as Permission[];
+    const validKeys = Object.values(PERMISSIONS) as Permission[];
     if (!validKeys.includes(input.permissionKey)) {
       throw new BadRequestError(
         `Invalid permission key: ${input.permissionKey}`,

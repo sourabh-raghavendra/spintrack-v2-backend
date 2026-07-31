@@ -1,6 +1,7 @@
 // src/domain/user/UserService.ts
 import {
   IUserRepository,
+  CreateUserInput,
   UpdateUserInput,
   UserFilters,
 } from "./IUserRepository";
@@ -27,6 +28,30 @@ export interface ChangePasswordInput {
 
 export class UserService {
   constructor(private readonly userRepository: IUserRepository) {}
+
+  async create(data: CreateUserInput): Promise<User> {
+    const existing = await this.userRepository.findByEmployeeCode(data.employeeCode);
+    if (existing) {
+      throw new ConflictError(
+        "Employee code already in use",
+        ErrorCodes.USER_ALREADY_EXISTS,
+      );
+    }
+    if (data.email) {
+      const existingEmail = await this.userRepository.findByEmail(data.email);
+      if (existingEmail) {
+        throw new ConflictError(
+          "Email already in use",
+          ErrorCodes.USER_ALREADY_EXISTS,
+        );
+      }
+    }
+    const hashedPassword = await hashPassword(data.password);
+    return this.userRepository.create({
+      ...data,
+      password: hashedPassword,
+    });
+  }
 
   async getById(id: string): Promise<User> {
     const user = await this.userRepository.findById(id);

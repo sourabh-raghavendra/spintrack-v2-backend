@@ -1,12 +1,16 @@
 // src/domain/user/UserController.ts
 import { UserService, UpdateMeInput, ChangePasswordInput } from "./UserService";
-import { UpdateUserInput, UserFilters } from "./IUserRepository";
+import { CreateUserInput, UpdateUserInput, UserFilters } from "./IUserRepository";
 import { FindAllParams } from "../../infrastructure/database/BaseRepository";
 import { User } from "./User";
 import { PaginatedResult } from "../../types/common";
 
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  async create(data: CreateUserInput): Promise<User> {
+    return this.userService.create(data);
+  }
 
   async getById(id: string): Promise<User> {
     return this.userService.getById(id);

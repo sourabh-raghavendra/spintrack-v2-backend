@@ -1,0 +1,46 @@
+// ── Taper ────────────────────────────────────────────────────────────
+// Admin-configured (tapers:manage). Drives which fields show on the
+// Final Inspection report/PDF for a given taper type.
+
+model Taper {
+  id        String   @id @default(cuid())
+  taperType String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  specs TaperSpec[]
+
+  @@map("tapers")
+}
+
+// ── TaperSpec ────────────────────────────────────────────────────────
+// One row per spec field per taper type (EAV-style, same pattern as
+// inspection_measurements — avoids ~20 near-duplicate columns).
+//
+// specKey is drawn from a constants file (mirrors measurement_key
+// convention), e.g. "after_grinding_ro_of_shaft", "go_no_go", etc.
+//
+// A field only appears on the Final Inspection PDF when BOTH:
+//   - include = true on this row, AND
+//   - the order's final_inspection record has a non-empty value for
+//     that same specKey
+
+model TaperSpec {
+  id      String @id @default(cuid())
+  taperId String
+  specKey String
+
+  label   String
+  min     Decimal @default(0)
+  max     Decimal @default(0)
+  unit    String  @default("")
+  include Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  taper Taper @relation(fields: [taperId], references: [id], onDelete: Cascade)
+
+  @@unique([taperId, specKey])
+  @@map("taper_specs")
+}

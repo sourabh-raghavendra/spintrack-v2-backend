@@ -113,4 +113,5 @@ export const PERMISSIONS = {
   NOTIFICATIONS_SEND: "notifications:send",
 } as const;
 
-export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+export type PermissionKey = Permission;

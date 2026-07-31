@@ -12,6 +12,12 @@ router.patch("/me", authMiddleware, userAdapter.updateMe);
 router.patch("/me/password", authMiddleware, userAdapter.changePassword);
 
 // ── Admin routes ──────────────────────────────────────────────────────
+router.post(
+  "/",
+  authMiddleware,
+  requirePermission("users:create"),
+  userAdapter.create,
+);
 router.get(
   "/",
   authMiddleware,
@@ -33,7 +39,7 @@ router.patch(
 router.delete(
   "/:id",
   authMiddleware,
-  requirePermission("users:delete"),
+  requirePermission("users:deactivate"),
   userAdapter.softDelete,
 );
 router.post(

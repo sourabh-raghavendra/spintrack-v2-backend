@@ -9,6 +9,20 @@ export const updateMeSchema = z.object({
   }),
 });
 
+export const createUserSchema = z.object({
+  body: z.object({
+    name: z.string().min(1, "Name is required"),
+    employeeCode: z.string().min(1, "Employee code is required"),
+    email: z.string().email("Invalid email address").nullable().optional(),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    zone: z.nativeEnum(Zone),
+    userType: z.nativeEnum(UserType),
+    department: z.nativeEnum(Department),
+    isAdmin: z.boolean().optional(),
+    isActive: z.boolean().optional(),
+  }),
+});
+
 export const changePasswordSchema = z.object({
   body: z.object({
     currentPassword: z.string().min(1, "Current password is required"),

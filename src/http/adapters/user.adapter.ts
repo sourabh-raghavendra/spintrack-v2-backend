@@ -9,10 +9,28 @@ import {
   changePasswordSchema,
   updateUserSchema,
   userIdParamSchema,
+  createUserSchema,
 } from "../validation/user.schema";
 
 export class UserAdapter {
   constructor(private readonly userController: UserController) {}
+
+  create = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const parsed = createUserSchema.safeParse({ body: req.body });
+      if (!parsed.success) {
+        return next(new ValidationError(parsed.error.issues[0].message));
+      }
+      const result = await this.userController.create(parsed.data.body);
+      res.status(201).json(success(result));
+    } catch (error) {
+      next(error);
+    }
+  };
 
   getMe = async (
     req: Request,
