@@ -1,0 +1,25 @@
+// ── Customer ─────────────────────────────────────────────────────────
+// customerId is the external human-readable code from the legacy system
+// (e.g. "C04349PN") — kept unique and separate from the internal cuid id.
+// customerName is also unique, matching the constraint already enforced
+// in the legacy Mongo schema.
+//
+// No orderList / customerContact fields here — orderList is just the
+// reverse relation (orders.customerId FK), and customerContact (the
+// email array) now lives on CustomerContact, built in a later step.
+
+model Customer {
+  id            String    @id @default(cuid())
+  customerId    String    @unique
+  customerName  String    @unique
+  customerState String
+  customerCity  String
+  postalCode    String?
+  zone          Zone
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // soft delete — business entity, audit trail
+
+  @@map("customers")
+}
