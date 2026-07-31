@@ -6,12 +6,15 @@ import { seedPermissions } from "./PermissionSeeder";
 import prisma from "../../../../config/database";
 import { seedAdmin } from "./AdminSeeder";
 import { seedTapers } from "./TaperSeeder";
+import { seedCustomers } from "./CustomerSeeder";
 
 async function main(): Promise<void> {
   await connectDb();
 
-  await seedPermissions(prisma);
-  await seedTapers();
+  // await seedPermissions(prisma);
+  // await seedTapers();
+
+  await seedCustomers();
 
   await disconnectDb();
   logger.info("Seeding complete");
