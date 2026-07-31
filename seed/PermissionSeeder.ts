@@ -6,8 +6,8 @@
 // besides description, and we don't want re-seeds to clobber a
 // hand-edited description either).
 
-import { PrismaClient } from "../../../../generated/prisma/client";
-import { PERMISSIONS } from "../../../../domain/permission/permissions";
+import { PrismaClient } from "../src/generated/prisma/client";
+import { PERMISSIONS } from "../src/domain/permission/permissions";
 
 const DESCRIPTIONS: Record<string, string> = {
   "spindles:create": "Create a new spindle master record",

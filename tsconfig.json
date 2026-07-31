@@ -31,6 +31,6 @@
       "supertest"
     ]
   },
-  "include": ["src", "tests", "prisma.config.ts"],
+  "include": ["src", "tests", "prisma.config.ts", "seed"],
   "exclude": ["node_modules", "dist"]
 }
