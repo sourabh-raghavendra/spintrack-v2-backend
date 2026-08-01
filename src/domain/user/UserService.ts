@@ -30,7 +30,9 @@ export class UserService {
   constructor(private readonly userRepository: IUserRepository) {}
 
   async create(data: CreateUserInput): Promise<User> {
-    const existing = await this.userRepository.findByEmployeeCode(data.employeeCode);
+    const existing = await this.userRepository.findByEmployeeCode(
+      data.employeeCode,
+    );
     if (existing) {
       throw new ConflictError(
         "Employee code already in use",
@@ -82,7 +84,10 @@ export class UserService {
     };
   }
 
-  async update(id: string, data: UpdateUserInput): Promise<User> {
+  async update(
+    id: string,
+    data: Omit<UpdateUserInput, "password">,
+  ): Promise<User> {
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundError("User not found", ErrorCodes.USER_NOT_FOUND);
@@ -99,7 +104,9 @@ export class UserService {
     }
 
     if (data.employeeCode && data.employeeCode !== user.employeeCode) {
-      const existing = await this.userRepository.findByEmployeeCode(data.employeeCode);
+      const existing = await this.userRepository.findByEmployeeCode(
+        data.employeeCode,
+      );
       if (existing) {
         throw new ConflictError(
           "Employee code already in use",
@@ -150,5 +157,13 @@ export class UserService {
       throw new NotFoundError("User not found", ErrorCodes.USER_NOT_FOUND);
     }
     await this.userRepository.restore(id);
+  }
+  async adminResetPassword(id: string, newPassword: string): Promise<void> {
+    const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new NotFoundError("User not found", ErrorCodes.USER_NOT_FOUND);
+    }
+    const newHash = await hashPassword(newPassword);
+    await this.userRepository.update(id, { password: newHash });
   }
 }

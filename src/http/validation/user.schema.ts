@@ -57,3 +57,10 @@ export const userIdParamSchema = z.object({
 export type UpdateMeInput = z.infer<typeof updateMeSchema>["body"];
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>["body"];
 export type UpdateUserInput = z.infer<typeof updateUserSchema>["body"];
+
+export const adminResetPasswordSchema = z.object({
+  params: userIdParamSchema.shape.params,
+  body: z.object({
+    newPassword: z.string().min(8), // match whatever policy your other password schemas use
+  }),
+});

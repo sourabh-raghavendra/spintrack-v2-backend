@@ -48,5 +48,11 @@ router.post(
   requirePermission("users:update"),
   userAdapter.restore,
 );
+router.patch(
+  "/:id/password",
+  authMiddleware,
+  requirePermission("users:reset_password"),
+  userAdapter.adminResetPassword,
+);
 
 export default router;

@@ -10,6 +10,7 @@ import {
   updateUserSchema,
   userIdParamSchema,
   createUserSchema,
+  adminResetPasswordSchema,
 } from "../validation/user.schema";
 
 export class UserAdapter {
@@ -187,6 +188,29 @@ export class UserAdapter {
         return next(new ValidationError(parsed.error.issues[0].message));
       }
       await this.userController.restore(parsed.data.params.id);
+      res.status(200).json(success(null));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  adminResetPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const parsed = adminResetPasswordSchema.safeParse({
+        params: req.params,
+        body: req.body,
+      });
+      if (!parsed.success) {
+        return next(new ValidationError(parsed.error.issues[0].message));
+      }
+      await this.userController.adminResetPassword(
+        parsed.data.params.id,
+        parsed.data.body.newPassword,
+      );
       res.status(200).json(success(null));
     } catch (error) {
       next(error);
