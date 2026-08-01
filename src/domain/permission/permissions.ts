@@ -7,6 +7,14 @@
 // Zone-view permissions are derived from the Zone enum below rather than
 // hardcoded twice, so adding a zone later (still a migration either way)
 // only means updating ZONES in one place.
+//
+// `<domain>:manage` permissions are a FRONTEND VISIBILITY GATE ONLY —
+// holding `<domain>:manage` is what makes that section appear in
+// navigation at all. It does not replace the finer create/read/update
+// permissions below it, which still individually gate the actual
+// backend actions. Backend routes do not need to check `<domain>:manage`
+// — it's consumed purely from the permission list already returned at
+// login, by the frontend.
 
 // ── Reports ───────────────────────────────────────────────────────────
 // This is the authoritative list of report sections, taken directly from
@@ -47,11 +55,13 @@ export const ZONES = ["WISC", "SISC", "NISC"] as const;
 
 export const PERMISSIONS = {
   // Spindles — no delete; physical asset records are never removed
+  SPINDLES_MANAGE: "spindles:manage",
   SPINDLES_CREATE: "spindles:create",
   SPINDLES_READ: "spindles:read",
   SPINDLES_UPDATE: "spindles:update",
 
   // Orders (Job Order / sales entry)
+  ORDERS_MANAGE: "orders:manage",
   ORDERS_CREATE: "orders:create",
   ORDERS_READ: "orders:read",
   ORDERS_UPDATE: "orders:update",
@@ -66,7 +76,9 @@ export const PERMISSIONS = {
     ]),
   ),
 
-  // Reports — one write permission per report section, derived below
+  // Reports — umbrella visibility gate, plus one write permission per
+  // report section (derived below)
+  REPORTS_MANAGE: "reports:manage",
   ...Object.fromEntries(
     REPORTS.map((report) => [
       `REPORT_${report.toUpperCase()}_WRITE`,
@@ -75,16 +87,19 @@ export const PERMISSIONS = {
   ),
 
   // Media (internal upload/delete — read is implied by order visibility)
+  MEDIA_MANAGE: "media:manage",
   MEDIA_UPLOAD: "media:upload",
   MEDIA_DELETE: "media:delete",
 
   // Notes (internal, per order/report)
+  NOTES_MANAGE: "notes:manage",
   NOTES_WRITE: "notes:write",
 
   // Tapers — admin config screen, single permission covers manage
   TAPERS_MANAGE: "tapers:manage",
 
   // Users (employee management)
+  USERS_MANAGE: "users:manage",
   USERS_CREATE: "users:create",
   USERS_READ: "users:read",
   USERS_UPDATE: "users:update",
@@ -93,12 +108,14 @@ export const PERMISSIONS = {
   USERS_ASSIGN_PERMISSIONS: "users:assign_permissions",
 
   // Customers (CRM)
+  CUSTOMERS_MANAGE: "customers:manage",
   CUSTOMERS_CREATE: "customers:create",
   CUSTOMERS_READ: "customers:read",
   CUSTOMERS_UPDATE: "customers:update",
-  CUSTOMERS_VIEW_ANALYTICS: "customers:view_analytics", // top-10, 3yr count
+  CUSTOMERS_DEACTIVATE: "customers:deactivate",
 
   // Customer contacts (also the customer-portal login identity)
+  CUSTOMER_CONTACTS_MANAGE: "customer_contacts:manage",
   CUSTOMER_CONTACTS_CREATE: "customer_contacts:create",
   CUSTOMER_CONTACTS_READ: "customer_contacts:read",
   CUSTOMER_CONTACTS_UPDATE: "customer_contacts:update",
@@ -106,12 +123,17 @@ export const PERMISSIONS = {
 
   // Email logs — system writes these automatically; this permission
   // gates viewing the log, not sending
+  EMAIL_LOGS_MANAGE: "email_logs:manage",
   EMAIL_LOGS_READ: "email_logs:read",
 
   // Notifications — sending a notification is a deliberate action;
   // reading your own notifications requires no permission
+  NOTIFICATIONS_MANAGE: "notifications:manage",
   NOTIFICATIONS_SEND: "notifications:send",
+
+  // Analytics — separate domain, not nested under customers/orders/etc.
+  ANALYTICS_MANAGE: "analytics:manage",
+  ANALYTICS_VIEW_CUSTOMERS: "analytics:view_customers", // top-10, 3yr count
 } as const;
 
-export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
-export type PermissionKey = Permission;
+export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

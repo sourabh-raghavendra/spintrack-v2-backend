@@ -1,61 +1,86 @@
 // src/infrastructure/database/prisma/seeders/PermissionSeeder.ts
-//
-// Seeds every permission key from src/domain/permission/permissions.ts.
-// Idempotent — safe to re-run. Uses `update: {}` on upsert so re-seeding
-// never overwrites anything (there's nothing mutable on a Permission row
-// besides description, and we don't want re-seeds to clobber a
-// hand-edited description either).
+import prisma from "../../../../config/database";
+import {
+  PERMISSIONS,
+  REPORTS,
+  ZONES,
+} from "../../../../domain/permission/permissions";
+import logger from "../../../../observability/logger";
 
-import { PrismaClient } from "../../../../generated/prisma/client";
-import { PERMISSIONS } from "../../../../domain/permission/permissions";
+const permissionDescriptions: Record<string, string> = {
+  [PERMISSIONS.SPINDLES_MANAGE]:
+    "Frontend visibility gate for the Spindles section",
+  [PERMISSIONS.SPINDLES_CREATE]: "Create a new spindle master record",
+  [PERMISSIONS.SPINDLES_READ]: "View spindle records and history",
+  [PERMISSIONS.SPINDLES_UPDATE]: "Update spindle details",
 
-const DESCRIPTIONS: Record<string, string> = {
-  "spindles:create": "Create a new spindle master record",
-  "spindles:read": "View spindle records and history",
-  "spindles:update": "Update spindle details",
+  [PERMISSIONS.ORDERS_MANAGE]:
+    "Frontend visibility gate for the Orders section",
+  [PERMISSIONS.ORDERS_CREATE]: "Log a new order (sales entry)",
+  [PERMISSIONS.ORDERS_READ]: "View order details",
+  [PERMISSIONS.ORDERS_UPDATE]: "Update order-level fields",
+  [PERMISSIONS.ORDERS_CANCEL]: "Cancel an order",
+  [PERMISSIONS.ORDERS_GENERATE_PDF]: "Generate the final report summary PDF",
 
-  "orders:create": "Log a new order (sales entry)",
-  "orders:read": "View order details",
-  "orders:update": "Update order-level fields",
-  "orders:cancel": "Cancel an order",
-  "orders:generate_pdf": "Generate the final report summary PDF",
+  [PERMISSIONS.REPORTS_MANAGE]:
+    "Frontend visibility gate for the Reports section",
 
-  "media:upload": "Upload media/documents to an order",
-  "media:delete": "Delete uploaded media/documents",
+  [PERMISSIONS.MEDIA_MANAGE]: "Frontend visibility gate for the Media section",
+  [PERMISSIONS.MEDIA_UPLOAD]: "Upload media/documents to an order",
+  [PERMISSIONS.MEDIA_DELETE]: "Delete uploaded media/documents",
 
-  "notes:write": "Add internal notes to an order/report",
+  [PERMISSIONS.NOTES_MANAGE]: "Frontend visibility gate for the Notes section",
+  [PERMISSIONS.NOTES_WRITE]: "Add internal notes to an order/report",
 
-  "tapers:manage": "Create/update taper types and taper specs",
+  [PERMISSIONS.TAPERS_MANAGE]: "Create/update taper types and taper specs",
 
-  "users:create": "Create a new employee user",
-  "users:read": "View employee user records",
-  "users:update": "Update employee user details",
-  "users:deactivate": "Deactivate an employee user",
-  "users:reset_password": "Reset any user's password directly",
-  "users:assign_permissions": "Assign or revoke permissions for a user",
+  [PERMISSIONS.USERS_MANAGE]: "Frontend visibility gate for the Users section",
+  [PERMISSIONS.USERS_CREATE]: "Create a new employee user",
+  [PERMISSIONS.USERS_READ]: "View employee user records",
+  [PERMISSIONS.USERS_UPDATE]: "Update employee user details",
+  [PERMISSIONS.USERS_DEACTIVATE]: "Deactivate an employee user",
+  [PERMISSIONS.USERS_RESET_PASSWORD]: "Reset any user's password directly",
+  [PERMISSIONS.USERS_ASSIGN_PERMISSIONS]:
+    "Assign or revoke permissions for a user",
 
-  "customers:create": "Create a new customer",
-  "customers:read": "View customer records",
-  "customers:update": "Update customer details",
-  "customers:view_analytics": "View top customers / customer-count analytics",
+  [PERMISSIONS.CUSTOMERS_MANAGE]:
+    "Frontend visibility gate for the Customers section",
+  [PERMISSIONS.CUSTOMERS_CREATE]: "Create a new customer",
+  [PERMISSIONS.CUSTOMERS_READ]: "View customer records",
+  [PERMISSIONS.CUSTOMERS_UPDATE]: "Update customer details",
+  [PERMISSIONS.CUSTOMERS_DEACTIVATE]: "Deactivate (soft-delete) a customer",
 
-  "customer_contacts:create": "Create a new customer contact (portal login)",
-  "customer_contacts:read": "View customer contact records",
-  "customer_contacts:update": "Update customer contact details",
-  "customer_contacts:deactivate": "Deactivate a customer contact",
+  [PERMISSIONS.CUSTOMER_CONTACTS_MANAGE]:
+    "Frontend visibility gate for the Customer Contacts section",
+  [PERMISSIONS.CUSTOMER_CONTACTS_CREATE]:
+    "Create a new customer contact (portal login)",
+  [PERMISSIONS.CUSTOMER_CONTACTS_READ]: "View customer contact records",
+  [PERMISSIONS.CUSTOMER_CONTACTS_UPDATE]: "Update customer contact details",
+  [PERMISSIONS.CUSTOMER_CONTACTS_DEACTIVATE]: "Deactivate a customer contact",
 
-  "email_logs:read": "View the log of emails sent by the system",
+  [PERMISSIONS.EMAIL_LOGS_MANAGE]:
+    "Frontend visibility gate for the Email Logs section",
+  [PERMISSIONS.EMAIL_LOGS_READ]: "View the log of emails sent by the system",
 
-  "notifications:send": "Send an in-app notification to users/zones",
+  [PERMISSIONS.NOTIFICATIONS_MANAGE]:
+    "Frontend visibility gate for the Notifications section",
+  [PERMISSIONS.NOTIFICATIONS_SEND]:
+    "Send an in-app notification to users/zones",
+
+  [PERMISSIONS.ANALYTICS_MANAGE]:
+    "Frontend visibility gate for the Analytics section",
+  [PERMISSIONS.ANALYTICS_VIEW_CUSTOMERS]:
+    "View top customers / customer-count analytics",
 };
 
-// Human-readable descriptions for the derived zone-view and report-write
-// permissions, generated the same way the keys themselves were derived.
-for (const zone of ["WISC", "SISC", "NISC"]) {
-  DESCRIPTIONS[`orders:view_zone_${zone.toLowerCase()}`] =
-    `View orders belonging to the ${zone} zone`;
+// Derived descriptions for zone-view permissions
+for (const zone of ZONES) {
+  const key =
+    PERMISSIONS[`ORDERS_VIEW_ZONE_${zone}` as keyof typeof PERMISSIONS];
+  permissionDescriptions[key] = `View orders belonging to the ${zone} zone`;
 }
 
+// Derived descriptions for report-write permissions
 const REPORT_LABELS: Record<string, string> = {
   incoming_alert: "Incoming Alert",
   checksheet: "Checksheet",
@@ -71,23 +96,30 @@ const REPORT_LABELS: Record<string, string> = {
   deviations: "Deviations",
   order_closure: "Order Closure",
 };
-for (const [key, label] of Object.entries(REPORT_LABELS)) {
-  DESCRIPTIONS[`${key}:write`] = `Write access to the ${label} report`;
+for (const report of REPORTS) {
+  const key =
+    PERMISSIONS[
+      `REPORT_${report.toUpperCase()}_WRITE` as keyof typeof PERMISSIONS
+    ];
+  permissionDescriptions[key] =
+    `Write access to the ${REPORT_LABELS[report]} report`;
 }
 
-export async function seedPermissions(prisma: PrismaClient): Promise<void> {
-  const keys = Object.values(PERMISSIONS);
+export async function seedPermissions(): Promise<void> {
+  logger.info("Seeding permissions...");
 
-  for (const key of keys) {
+  const permissionKeys = Object.values(PERMISSIONS);
+
+  for (const key of permissionKeys) {
     await prisma.permission.upsert({
       where: { key },
+      update: {}, // never overwrite existing
       create: {
         key,
-        description: DESCRIPTIONS[key] ?? null,
+        description: permissionDescriptions[key] ?? null,
       },
-      update: {}, // never overwrite on re-seed
     });
   }
 
-  console.log(`Seeded ${keys.length} permissions.`);
+  logger.info(`Permissions seeded — ${permissionKeys.length} permissions`);
 }

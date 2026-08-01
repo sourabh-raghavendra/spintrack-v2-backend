@@ -31,6 +31,28 @@ const authService = new AuthService(userRepository, permissionService);
 const authController = new AuthController(authService);
 const authAdapter = new AuthAdapter(authController);
 
+// ── Tapers ────────────────────────────────────────────────────────────
+import { TaperRepository } from "../infrastructure/database/TaperRepository";
+import { TaperService } from "../domain/taper/TaperService";
+import { TaperController } from "../domain/taper/TaperController";
+import { TaperAdapter } from "../http/adapters/taper.adapter";
+
+const taperRepository = new TaperRepository();
+const taperService = new TaperService(taperRepository);
+const taperController = new TaperController(taperService);
+const taperAdapter = new TaperAdapter(taperController);
+
+// ── Customers ─────────────────────────────────────────────────────────
+import { CustomerRepository } from "../infrastructure/database/CustomerRepository";
+import { CustomerService } from "../domain/customer/CustomerService";
+import { CustomerController } from "../domain/customer/CustomerController";
+import { CustomerAdapter } from "../http/adapters/customer.adapter";
+
+const customerRepository = new CustomerRepository();
+const customerService = new CustomerService(customerRepository);
+const customerController = new CustomerController(customerService);
+const customerAdapter = new CustomerAdapter(customerController);
+
 // ── Exports ───────────────────────────────────────────────────────────
 export {
   // Permissions
@@ -49,4 +71,16 @@ export {
   authService,
   authController,
   authAdapter,
+
+  // Tapers
+  taperRepository,
+  taperService,
+  taperController,
+  taperAdapter,
+
+  // Customers
+  customerRepository,
+  customerService,
+  customerController,
+  customerAdapter,
 };

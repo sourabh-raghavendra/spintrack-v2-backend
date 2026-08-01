@@ -11,10 +11,10 @@ import { seedCustomers } from "./CustomerSeeder";
 async function main(): Promise<void> {
   await connectDb();
 
-  // await seedPermissions(prisma);
+  await seedPermissions();
   // await seedTapers();
 
-  await seedCustomers();
+  // await seedCustomers();
 
   await disconnectDb();
   logger.info("Seeding complete");
