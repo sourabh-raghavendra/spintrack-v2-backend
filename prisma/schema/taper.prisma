@@ -8,7 +8,8 @@ model Taper {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  specs TaperSpec[]
+  specs    TaperSpec[]
+  spindles Spindle[]
 
   @@map("tapers")
 }

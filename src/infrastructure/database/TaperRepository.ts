@@ -14,9 +14,10 @@ export class TaperRepository
 
   // ── ITaperRepository & BaseRepository common queries ────────────────
   async findAll(params?: FindAllParams): Promise<TaperWithSpecs[]> {
+    const pagination = params?.page || params?.limit ? this.getPaginationParams(params) : {};
     return this.db.taper.findMany({
       include: { specs: true },
-      ...this.getPaginationParams(params),
+      ...pagination,
       orderBy: params?.sortBy ? this.getSortParams(params) : { taperType: "asc" },
     });
   }
@@ -98,15 +99,38 @@ export class TaperRepository
       include: boolean;
     }>,
   ): Promise<TaperSpec> {
-    return this.db.taperSpec.update({
+    const existing = await this.db.taperSpec.findUnique({
       where: {
         taperId_specKey: {
           taperId,
           specKey,
         },
       },
-      data,
     });
+
+    if (existing) {
+      return this.db.taperSpec.update({
+        where: {
+          taperId_specKey: {
+            taperId,
+            specKey,
+          },
+        },
+        data,
+      });
+    } else {
+      return this.db.taperSpec.create({
+        data: {
+          taperId,
+          specKey,
+          label: data.label ?? specKey,
+          min: data.min ?? 0,
+          max: data.max ?? 0,
+          unit: data.unit ?? "",
+          include: data.include ?? false,
+        },
+      });
+    }
   }
 
   async deleteSpec(taperId: string, specKey: string): Promise<void> {

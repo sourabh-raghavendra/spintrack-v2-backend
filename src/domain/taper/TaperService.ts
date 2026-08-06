@@ -20,8 +20,51 @@ export class TaperService {
   }
 
   async createTaper(taperType: string): Promise<Taper> {
+    const DEFAULT_SPECS_TEMPLATE = [
+      { specKey: "afterGrindingROOfShaft", label: "After Grinding R/O of Shaft (mm)", unit: "mm" },
+      { specKey: "goNoGo", label: "Go-NoGo", unit: "mm" },
+      { specKey: "blueMatching", label: "Blue Matching", unit: "%" },
+      { specKey: "spacerSizeNNBearing", label: "Spacer Size of NN Bearing (mm)", unit: "mm" },
+      { specKey: "housingDepth", label: "Housing Depth (mm)", unit: "mm" },
+      { specKey: "bearingStackLength", label: "Bearing Stack Length (mm)", unit: "mm" },
+      { specKey: "preloadOfCover", label: "Preload of Cover (mm)", unit: "mm" },
+      { specKey: "boreRO", label: "Bore R/O (mm)", unit: "mm" },
+      { specKey: "frontBearingTool", label: "Front Bearing Tool (mm)", unit: "mm" },
+      { specKey: "rearSideRO", label: "Rear Side R/O (mm)", unit: "mm" },
+      { specKey: "faceROHSK", label: "Face R/O (HSK) (mm)", unit: "mm" },
+      { specKey: "mandrelRO300WithStud", label: "Mandrel R/O @ 300mm (with stud) (mm)", unit: "mm" },
+      { specKey: "mandrelRO300WithDrawbar", label: "Mandrel R/O @ 300mm (with drawbar) (mm)", unit: "mm" },
+      { specKey: "clampingForceFinal", label: "Clamping Force (kg-f)", unit: "kg-f" },
+      { specKey: "radialPlay", label: "Radial Play (mm)", unit: "mm" },
+      { specKey: "axialPlay", label: "Axial Play (mm)", unit: "mm" },
+      { specKey: "axialFloat", label: "Axial float (mm)", unit: "mm" },
+      { specKey: "rearBearingTolerance", label: "Rear Bearing Tolerance (mm)", unit: "mm" },
+      { specKey: "totalShaftHeightAfterRework", label: "Total Shaft Height After Rework", unit: "mm" },
+      { specKey: "taperOdRunout", label: "Taper Od Runout", unit: "mm" },
+    ];
+
     try {
-      return await this.taperRepository.create(taperType);
+      const taper = await this.taperRepository.create(taperType);
+      
+      const normalizedType = taperType.trim().toUpperCase();
+      const excludeTaperOdRunout = normalizedType === "SK50" || normalizedType === "A2";
+
+      for (const spec of DEFAULT_SPECS_TEMPLATE) {
+        if (spec.specKey === "taperOdRunout" && excludeTaperOdRunout) {
+          continue;
+        }
+        await this.taperRepository.addSpec(taper.id, {
+          specKey: spec.specKey,
+          label: spec.label,
+          min: 0,
+          max: 0,
+          unit: spec.unit,
+          include: false,
+        });
+      }
+
+      const reloaded = await this.taperRepository.findById(taper.id);
+      return reloaded || taper;
     } catch (error: any) {
       if (error.code === "P2002") {
         throw new ConflictError(
@@ -104,14 +147,6 @@ export class TaperService {
     const taper = await this.taperRepository.findById(taperId);
     if (!taper) {
       throw new NotFoundError(`Taper with ID "${taperId}" not found`, ErrorCodes.NOT_FOUND);
-    }
-
-    const specExists = taper.specs.some((spec) => spec.specKey === specKey);
-    if (!specExists) {
-      throw new NotFoundError(
-        `Spec key "${specKey}" not found on taper "${taper.taperType}"`,
-        ErrorCodes.NOT_FOUND,
-      );
     }
 
     try {
