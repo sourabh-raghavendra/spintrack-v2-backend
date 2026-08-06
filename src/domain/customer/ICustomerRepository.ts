@@ -3,6 +3,7 @@ import { Customer } from "../../generated/prisma/client";
 
 export interface CustomerListFilters {
   zone?: string;
+  zones?: string[];
   search?: string; // matches against customerName or customerId
   page: number;
   pageSize: number;

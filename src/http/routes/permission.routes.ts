@@ -38,4 +38,12 @@ router.post(
   permissionAdapter.revokePermission,
 );
 
+// ── Sync user permissions in bulk ────────────────────────────────
+router.put(
+  "/user/sync",
+  authMiddleware,
+  requirePermission("users:assign_permissions"),
+  permissionAdapter.syncUserPermissions,
+);
+
 export default router;

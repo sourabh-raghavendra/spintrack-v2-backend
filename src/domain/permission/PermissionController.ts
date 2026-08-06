@@ -58,4 +58,24 @@ export class PermissionController {
       input.permissionKey,
     );
   }
+
+  // ── Sync user permissions in bulk ────────────────────────────────
+  async syncUserPermissions(input: {
+    userId: string;
+    permissions: Permission[];
+  }): Promise<void> {
+    const validKeys = Object.values(PERMISSIONS) as Permission[];
+    for (const key of input.permissions) {
+      if (!validKeys.includes(key)) {
+        throw new BadRequestError(
+          `Invalid permission key: ${key}`,
+          ErrorCodes.BAD_REQUEST,
+        );
+      }
+    }
+    return this.permissionService.syncUserPermissions(
+      input.userId,
+      input.permissions,
+    );
+  }
 }

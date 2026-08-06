@@ -93,4 +93,29 @@ export class PermissionAdapter {
       next(error);
     }
   };
+
+  // ── Sync user permissions in bulk ────────────────────────────────
+  syncUserPermissions = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const schema = z.object({
+        userId: z.string().min(1, "userId is required"),
+        permissions: z.array(z.string()),
+      });
+      const parsed = schema.safeParse(req.body);
+      if (!parsed.success) {
+        return next(new ValidationError(parsed.error.issues[0].message));
+      }
+      await this.permissionController.syncUserPermissions({
+        userId: parsed.data.userId,
+        permissions: parsed.data.permissions as Permission[],
+      });
+      res.status(200).json(success(null));
+    } catch (error) {
+      next(error);
+    }
+  };
 }

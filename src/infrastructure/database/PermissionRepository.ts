@@ -67,6 +67,20 @@ export class PermissionRepository
     });
   }
 
+  async syncUserPermissions(userId: string, permissionIds: string[]): Promise<void> {
+    await this.db.$transaction([
+      this.db.userPermission.deleteMany({
+        where: { userId },
+      }),
+      this.db.userPermission.createMany({
+        data: permissionIds.map((permissionId) => ({
+          userId,
+          permissionId,
+        })),
+      }),
+    ]);
+  }
+
   // ── BaseRepository abstract methods ───────────────────────────────
   async findById(id: string): Promise<PermissionRecord | null> {
     const record = await this.db.permission.findUnique({ where: { id } });

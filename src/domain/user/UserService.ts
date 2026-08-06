@@ -16,6 +16,8 @@ import {
 import { ErrorCodes } from "../../errors/errorCodes";
 import { PaginatedResult } from "../../types/common";
 
+import { PermissionService } from "../permission/PermissionService";
+
 export interface UpdateMeInput {
   email?: string | null;
   name?: string;
@@ -27,7 +29,10 @@ export interface ChangePasswordInput {
 }
 
 export class UserService {
-  constructor(private readonly userRepository: IUserRepository) {}
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly permissionService: PermissionService,
+  ) {}
 
   async create(data: CreateUserInput): Promise<User> {
     const existing = await this.userRepository.findByEmployeeCode(
@@ -60,7 +65,8 @@ export class UserService {
     if (!user) {
       throw new NotFoundError("User not found", ErrorCodes.USER_NOT_FOUND);
     }
-    return user;
+    const permissions = await this.permissionService.getUserPermissions(id);
+    return { ...user, permissions };
   }
 
   async getAll(
@@ -115,7 +121,9 @@ export class UserService {
       }
     }
 
-    return this.userRepository.update(id, data);
+    const updated = await this.userRepository.update(id, data);
+    const permissions = await this.permissionService.getUserPermissions(id);
+    return { ...updated, permissions };
   }
 
   async changePassword(id: string, input: ChangePasswordInput): Promise<void> {

@@ -67,4 +67,23 @@ export class PermissionService {
 
     await this.permissionRepository.revokePermission(userId, permission.id);
   }
+
+  // ── Sync user permissions in bulk ────────────────────────────────
+  async syncUserPermissions(
+    userId: string,
+    permissionKeys: Permission[],
+  ): Promise<void> {
+    const permissionIds: string[] = [];
+    for (const key of permissionKeys) {
+      const permission = await this.permissionRepository.findByKey(key);
+      if (!permission) {
+        throw new NotFoundError(
+          `Permission ${key} not found`,
+          ErrorCodes.NOT_FOUND,
+        );
+      }
+      permissionIds.push(permission.id);
+    }
+    await this.permissionRepository.syncUserPermissions(userId, permissionIds);
+  }
 }

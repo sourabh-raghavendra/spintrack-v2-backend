@@ -16,9 +16,10 @@ export interface User {
   deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  permissions?: string[];
 }
 
-export type SafeUser = Omit<User, "password">;
+export type SafeUser = Omit<User, "password"> & { permissions?: string[] };
 
 export function toSafeUser(user: User): SafeUser {
   const { password, ...safe } = user;

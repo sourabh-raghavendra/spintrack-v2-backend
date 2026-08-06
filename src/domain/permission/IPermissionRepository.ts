@@ -7,6 +7,7 @@ export interface IPermissionRepository {
   findUserPermissions(userId: string): Promise<Permission[]>;
   assignPermission(userId: string, permissionId: string): Promise<void>;
   revokePermission(userId: string, permissionId: string): Promise<void>;
+  syncUserPermissions(userId: string, permissionIds: string[]): Promise<void>;
 }
 
 export interface PermissionRecord {

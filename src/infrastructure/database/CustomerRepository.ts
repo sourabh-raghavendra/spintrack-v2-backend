@@ -15,6 +15,10 @@ export class CustomerRepository implements ICustomerRepository {
       where.zone = filters.zone as Zone;
     }
 
+    if (filters.zones && filters.zones.length > 0) {
+      where.zone = { in: filters.zones as Zone[] };
+    }
+
     if (filters.search) {
       const searchStr = filters.search.trim();
       where.OR = [

@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from "express";
 import { CustomerController } from "../../domain/customer/CustomerController";
 import { success } from "../../utils/response";
-import { ValidationError } from "../../errors/HttpError";
+import { ValidationError, ForbiddenError } from "../../errors/HttpError";
 import { z } from "zod";
 import { createCustomerSchema, updateCustomerSchema } from "../validation/customer.schema";
 
@@ -12,6 +12,13 @@ const customerIdParamSchema = z.object({
 
 export class CustomerAdapter {
   constructor(private readonly customerController: CustomerController) {}
+
+  private checkZoneAccess(req: Request, customerZone: string): void {
+    if (req.user!.isAdmin) return;
+    if (customerZone !== req.user!.zone) {
+      throw new ForbiddenError("You are not authorized to access this zone");
+    }
+  }
 
   list = async (
     req: Request,
@@ -26,10 +33,21 @@ export class CustomerAdapter {
       const zone = req.query.zone as string | undefined;
       const search = req.query.search as string | undefined;
 
+      const allowedZones = req.user!.isAdmin
+        ? ["WISC", "SISC", "NISC"]
+        : [req.user!.zone];
+
+      if (zone) {
+        if (!allowedZones.includes(zone)) {
+          throw new ForbiddenError("You are not authorized to view this zone");
+        }
+      }
+
       const result = await this.customerController.list({
         page,
         pageSize,
-        zone,
+        zone: zone || undefined,
+        zones: zone ? undefined : allowedZones,
         search,
       });
 
@@ -50,6 +68,7 @@ export class CustomerAdapter {
         return next(new ValidationError(parsed.error.issues[0].message));
       }
       const result = await this.customerController.getById(parsed.data.id);
+      this.checkZoneAccess(req, result.zone);
       res.status(200).json(success(result));
     } catch (error) {
       next(error);
@@ -66,6 +85,7 @@ export class CustomerAdapter {
       if (!parsed.success) {
         return next(new ValidationError(parsed.error.issues[0].message));
       }
+      this.checkZoneAccess(req, parsed.data.body.zone);
       const result = await this.customerController.create(parsed.data.body);
       res.status(201).json(success(result));
     } catch (error) {
@@ -87,6 +107,13 @@ export class CustomerAdapter {
       if (!parsedBody.success) {
         return next(new ValidationError(parsedBody.error.issues[0].message));
       }
+      
+      const existing = await this.customerController.getById(parsedParams.data.id);
+      this.checkZoneAccess(req, existing.zone);
+      if (parsedBody.data.body.zone) {
+        this.checkZoneAccess(req, parsedBody.data.body.zone);
+      }
+
       const result = await this.customerController.update(
         parsedParams.data.id,
         parsedBody.data.body,
@@ -107,6 +134,8 @@ export class CustomerAdapter {
       if (!parsed.success) {
         return next(new ValidationError(parsed.error.issues[0].message));
       }
+      const existing = await this.customerController.getById(parsed.data.id);
+      this.checkZoneAccess(req, existing.zone);
       await this.customerController.deactivate(parsed.data.id);
       res.status(200).json(success(null));
     } catch (error) {
@@ -124,6 +153,8 @@ export class CustomerAdapter {
       if (!parsed.success) {
         return next(new ValidationError(parsed.error.issues[0].message));
       }
+      const existing = await this.customerController.getById(parsed.data.id);
+      this.checkZoneAccess(req, existing.zone);
       await this.customerController.restore(parsed.data.id);
       res.status(200).json(success(null));
     } catch (error) {

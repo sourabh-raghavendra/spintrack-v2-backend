@@ -16,7 +16,7 @@ import { UserController } from "../domain/user/UserController";
 import { UserAdapter } from "../http/adapters/user.adapter";
 
 const userRepository = new UserRepository();
-const userService = new UserService(userRepository);
+const userService = new UserService(userRepository, permissionService);
 const userController = new UserController(userService);
 const userAdapter = new UserAdapter(userController);
 
