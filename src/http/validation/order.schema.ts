@@ -12,6 +12,7 @@ export const createOrderSchema = z.object({
     spindleReceivedDate: z.coerce.date(),
     customerId: z.string().min(1, "Customer ID is required"),
     spindleId: z.string().min(1, "Spindle ID is required"),
+    customerContactId: z.string().min(1).optional(),
   }),
 });
 
@@ -24,6 +25,7 @@ export const updateOrderSchema = z.object({
     spindleReceivedDate: z.coerce.date().nullable().optional(),
     customerId: z.string().min(1).optional(),
     spindleId: z.string().min(1).optional(),
+    customerContactId: z.string().min(1).nullable().optional(),
   }),
 });
 

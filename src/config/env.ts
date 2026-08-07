@@ -14,6 +14,8 @@ const envSchema = z.object({
   // JWT
   JWT_SECRET: z.string().min(1, "JWT_SECRET is required"),
   JWT_EXPIRY_HOURS: z.coerce.number().default(8),
+  CUSTOMER_JWT_SECRET: z.string().min(1, "CUSTOMER_JWT_SECRET is required"),
+  CUSTOMER_JWT_EXPIRY_HOURS: z.coerce.number().default(8),
 
   // AWS
   AWS_ACCESS_KEY_ID: z.string().min(1, "AWS_ACCESS_KEY_ID is required"),

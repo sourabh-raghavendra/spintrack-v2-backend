@@ -25,6 +25,13 @@ const orderIncludes = {
       employeeCode: true,
     },
   },
+  customerContact: {
+    select: {
+      id: true,
+      email: true,
+      name: true,
+    },
+  },
 };
 
 export class OrderRepository implements IOrderRepository {
@@ -94,6 +101,7 @@ export class OrderRepository implements IOrderRepository {
     customerId: string;
     spindleId: string;
     createdById: string;
+    customerContactId?: string | null;
   }): Promise<Order> {
     return prisma.order.create({
       data: {
@@ -107,6 +115,7 @@ export class OrderRepository implements IOrderRepository {
         customerId: data.customerId,
         spindleId: data.spindleId,
         createdById: data.createdById,
+        customerContactId: data.customerContactId,
         orderStage: OrderStage.RECEIVED,
       },
     });
@@ -122,6 +131,7 @@ export class OrderRepository implements IOrderRepository {
       spindleReceivedDate: Date | null;
       customerId: string;
       spindleId: string;
+      customerContactId: string | null;
     }>,
   ): Promise<Order> {
     return prisma.order.update({

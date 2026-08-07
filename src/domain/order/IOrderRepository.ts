@@ -5,6 +5,7 @@ export type OrderWithRelations = Order & {
   customer: { id: string; customerName: string };
   spindle: { id: string; make: string; type: string; serialNumber: string };
   createdBy: { id: string; name: string; employeeCode: string };
+  customerContact: { id: string; email: string; name: string | null } | null;
 };
 
 export interface OrderListFilters {
@@ -33,6 +34,7 @@ export interface IOrderRepository {
     customerId: string;
     spindleId: string;
     createdById: string;
+    customerContactId?: string | null;
   }): Promise<Order>;
   update(
     id: string,
@@ -44,6 +46,7 @@ export interface IOrderRepository {
       spindleReceivedDate: Date | null;
       customerId: string;
       spindleId: string;
+      customerContactId: string | null;
     }>,
   ): Promise<Order>;
   setStage(id: string, stage: OrderStage): Promise<Order>;

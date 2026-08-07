@@ -21,7 +21,8 @@ model Customer {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // soft delete — business entity, audit trail
 
-  orders Order[]
+  orders   Order[]
+  contacts CustomerContact[]
 
   @@map("customers")
 }

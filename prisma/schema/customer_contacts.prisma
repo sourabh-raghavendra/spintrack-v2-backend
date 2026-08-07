@@ -1,0 +1,30 @@
+// ── CustomerContact ──────────────────────────────────────────────────
+// The actual login identity for the customer portal — a person, not a
+// company. A contact belongs to exactly one Customer (company); any
+// contact from that company sees the company's full order history
+// (confirmed earlier — company-wide visibility, not contact-scoped).
+//
+// No PBAC here — access is purely "does this order belong to my
+// customerId," not permission-based. Auth is a separate JWT flow from
+// employees (different secret — see CUSTOMER_JWT_SECRET in .env).
+
+model CustomerContact {
+  id         String  @id @default(cuid())
+  customerId String
+  email      String  @unique
+  password   String
+  name       String?
+  phone      String?
+
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  deletedAt   DateTime? // soft delete — same pattern as User/Customer
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  orders   Order[]
+
+  @@map("customer_contacts")
+}

@@ -4,6 +4,7 @@ import { Order, OrderStage } from "../../generated/prisma/client";
 import { NotFoundError, ConflictError, ValidationError } from "../../errors/HttpError";
 import { ErrorCodes } from "../../errors/errorCodes";
 import { RequestUser } from "../../types/common";
+import prisma from "../../config/database";
 
 export class OrderService {
   constructor(private readonly orderRepository: IOrderRepository) {}
@@ -65,6 +66,7 @@ export class OrderService {
       spindleReceivedDate: Date;
       customerId: string;
       spindleId: string;
+      customerContactId?: string | null;
     },
     requestingUser: RequestUser,
   ): Promise<Order> {
@@ -77,6 +79,21 @@ export class OrderService {
         "This spindle is already attached to an open order",
         ErrorCodes.USER_ALREADY_EXISTS,
       );
+    }
+
+    if (input.customerContactId) {
+      const contact = await prisma.customerContact.findFirst({
+        where: { id: input.customerContactId, deletedAt: null },
+      });
+      if (!contact) {
+        throw new NotFoundError(`Customer contact not found`);
+      }
+      if (contact.customerId !== input.customerId) {
+        throw new ValidationError(
+          "This contact does not belong to the selected customer",
+          ErrorCodes.VALIDATION_ERROR
+        );
+      }
     }
 
     try {
@@ -99,7 +116,7 @@ export class OrderService {
       }
       if (error.code === "P2003") {
         throw new NotFoundError(
-          "Customer or Spindle does not exist",
+          "Customer, Spindle, or Customer Contact does not exist",
           ErrorCodes.NOT_FOUND,
         );
       }
@@ -117,6 +134,7 @@ export class OrderService {
       spindleReceivedDate: Date | null;
       customerId: string;
       spindleId: string;
+      customerContactId: string | null;
     }>,
     requestingUser: RequestUser,
   ): Promise<Order> {
@@ -144,6 +162,22 @@ export class OrderService {
       }
     }
 
+    if (input.customerContactId) {
+      const contact = await prisma.customerContact.findFirst({
+        where: { id: input.customerContactId, deletedAt: null },
+      });
+      if (!contact) {
+        throw new NotFoundError(`Customer contact not found`);
+      }
+      const authoritativeCustomerId = input.customerId !== undefined ? input.customerId : order.customerId;
+      if (contact.customerId !== authoritativeCustomerId) {
+        throw new ValidationError(
+          "This contact does not belong to the selected customer",
+          ErrorCodes.VALIDATION_ERROR
+        );
+      }
+    }
+
     try {
       return await this.orderRepository.update(id, input);
     } catch (error: any) {
@@ -160,7 +194,7 @@ export class OrderService {
       }
       if (error.code === "P2003") {
         throw new NotFoundError(
-          "Customer or Spindle does not exist",
+          "Customer, Spindle, or Customer Contact does not exist",
           ErrorCodes.NOT_FOUND,
         );
       }

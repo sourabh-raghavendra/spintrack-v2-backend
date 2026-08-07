@@ -75,6 +75,26 @@ const orderService = new OrderService(orderRepository);
 const orderController = new OrderController(orderService);
 const orderAdapter = new OrderAdapter(orderController);
 
+// ── Customer Contacts ──────────────────────────────────────────────────
+import { CustomerContactRepository } from "../infrastructure/database/CustomerContactRepository";
+import { CustomerContactService } from "../domain/customerContact/CustomerContactService";
+import { CustomerContactController } from "../domain/customerContact/CustomerContactController";
+import { CustomerContactAdapter } from "../http/adapters/customerContact.adapter";
+
+const customerContactRepository = new CustomerContactRepository();
+const customerContactService = new CustomerContactService(customerContactRepository);
+const customerContactController = new CustomerContactController(customerContactService);
+const customerContactAdapter = new CustomerContactAdapter(customerContactController, customerRepository);
+
+// ── Customer Portal Auth ──────────────────────────────────────────────
+import { PortalAuthService } from "../domain/portalAuth/PortalAuthService";
+import { PortalAuthController } from "../domain/portalAuth/PortalAuthController";
+import { PortalAuthAdapter } from "../http/adapters/portalAuth.adapter";
+
+const portalAuthService = new PortalAuthService(customerContactRepository);
+const portalAuthController = new PortalAuthController(portalAuthService);
+const portalAuthAdapter = new PortalAuthAdapter(portalAuthController, customerContactRepository, customerRepository);
+
 // ── Exports ───────────────────────────────────────────────────────────
 export {
   // Permissions
@@ -117,4 +137,13 @@ export {
   orderService,
   orderController,
   orderAdapter,
+
+  // Customer Contacts & Portal
+  customerContactRepository,
+  customerContactService,
+  customerContactController,
+  customerContactAdapter,
+  portalAuthService,
+  portalAuthController,
+  portalAuthAdapter,
 };

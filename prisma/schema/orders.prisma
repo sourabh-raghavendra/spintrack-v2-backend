@@ -21,16 +21,20 @@ model Order {
 
   zone Zone
 
-  customerId String
-  spindleId  String
-  createdById String
+  customerId        String
+  spindleId         String
+  createdById       String
+  customerContactId String? // who to notify on order updates (form completion,
+  // report generation, etc.) — nullable, since not
+  // every order will have a contact explicitly picked
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  customer  Customer @relation(fields: [customerId], references: [id])
-  spindle   Spindle  @relation(fields: [spindleId], references: [id])
-  createdBy User     @relation(fields: [createdById], references: [id])
+  customer        Customer         @relation(fields: [customerId], references: [id])
+  spindle         Spindle          @relation(fields: [spindleId], references: [id])
+  createdBy       User             @relation(fields: [createdById], references: [id])
+  customerContact CustomerContact? @relation(fields: [customerContactId], references: [id])
 
   @@map("orders")
 }
