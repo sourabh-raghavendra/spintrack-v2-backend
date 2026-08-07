@@ -1,6 +1,5 @@
 // ── Zone ──────────────────────────────────────────────────────────────
 // Seed-only. Adding a new zone later requires a migration (ALTER TYPE ADD VALUE).
-// PLACEHOLDER — confirm actual zone names before seeding.
 
 enum Zone {
   WISC
@@ -31,4 +30,23 @@ enum Department {
   IT
   TESTING
   FINANCE
+}
+
+// ── OrderType ─────────────────────────────────────────────────────────
+
+enum OrderType {
+  REPAIR_ISR
+  REPAIR_SSR
+  MANUFACTURING
+}
+
+// ── OrderStage ────────────────────────────────────────────────────────
+// Calculated internally — see OrderService. ARCHIVED is the soft-delete
+// mechanism; there is no CANCELLED value and no separate deletedAt.
+
+enum OrderStage {
+  RECEIVED
+  ONGOING
+  COMPLETED
+  ARCHIVED
 }

@@ -17,14 +17,9 @@ model Spindle {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  taper     Taper @relation(fields: [taperId], references: [id])
-  createdBy User  @relation(fields: [createdById], references: [id])
-
-  // NOTE: an `orders Order[]` back-relation belongs here once
-  // orders.prisma is written (Sales Entry/Order domain, next after this
-  // one). Prisma requires both sides of a relation to exist
-  // simultaneously — do not add this field until Order model exists,
-  // or schema validation will fail.
+  taper     Taper   @relation(fields: [taperId], references: [id])
+  createdBy User    @relation(fields: [createdById], references: [id])
+  orders    Order[]
 
   @@map("spindles")
 }

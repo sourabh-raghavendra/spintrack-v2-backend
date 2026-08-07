@@ -25,6 +25,7 @@ model User {
   // Relations
   permissions     UserPermission[]
   createdSpindles Spindle[]
+  createdOrders   Order[]
 
   @@map("users")
 }

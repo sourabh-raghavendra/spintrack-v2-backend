@@ -64,6 +64,17 @@ const spindleService = new SpindleService(spindleRepository);
 const spindleController = new SpindleController(spindleService);
 const spindleAdapter = new SpindleAdapter(spindleController);
 
+// ── Orders ────────────────────────────────────────────────────────────
+import { OrderRepository } from "../infrastructure/database/OrderRepository";
+import { OrderService } from "../domain/order/OrderService";
+import { OrderController } from "../domain/order/OrderController";
+import { OrderAdapter } from "../http/adapters/order.adapter";
+
+const orderRepository = new OrderRepository();
+const orderService = new OrderService(orderRepository);
+const orderController = new OrderController(orderService);
+const orderAdapter = new OrderAdapter(orderController);
+
 // ── Exports ───────────────────────────────────────────────────────────
 export {
   // Permissions
@@ -100,4 +111,10 @@ export {
   spindleService,
   spindleController,
   spindleAdapter,
+
+  // Orders
+  orderRepository,
+  orderService,
+  orderController,
+  orderAdapter,
 };

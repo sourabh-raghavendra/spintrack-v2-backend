@@ -1,0 +1,36 @@
+// ── Order ────────────────────────────────────────────────────────────
+// The "Job Order" header. orderStage is calculated internally by the
+// system (see OrderService state machine notes) — never set directly
+// via a general update endpoint.
+//
+// No deletedAt — ARCHIVED *is* the soft-delete mechanism. Hard delete is
+// only permitted from ARCHIVED, and is an admin-only action.
+
+model Order {
+  id String @id @default(cuid())
+
+  rma       String @unique
+  so        String @unique
+  jo        String @unique
+  quotation String @unique
+
+  orderType  OrderType
+  orderStage OrderStage @default(RECEIVED)
+
+  spindleReceivedDate DateTime?
+
+  zone Zone
+
+  customerId String
+  spindleId  String
+  createdById String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  customer  Customer @relation(fields: [customerId], references: [id])
+  spindle   Spindle  @relation(fields: [spindleId], references: [id])
+  createdBy User     @relation(fields: [createdById], references: [id])
+
+  @@map("orders")
+}
