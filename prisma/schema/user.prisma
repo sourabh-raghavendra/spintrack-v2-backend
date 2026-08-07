@@ -23,7 +23,8 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  permissions UserPermission[]
+  permissions     UserPermission[]
+  createdSpindles Spindle[]
 
   @@map("users")
 }

@@ -53,6 +53,17 @@ const customerService = new CustomerService(customerRepository);
 const customerController = new CustomerController(customerService);
 const customerAdapter = new CustomerAdapter(customerController);
 
+// ── Spindles ──────────────────────────────────────────────────────────
+import { SpindleRepository } from "../infrastructure/database/SpindleRepository";
+import { SpindleService } from "../domain/spindle/SpindleService";
+import { SpindleController } from "../domain/spindle/SpindleController";
+import { SpindleAdapter } from "../http/adapters/spindle.adapter";
+
+const spindleRepository = new SpindleRepository();
+const spindleService = new SpindleService(spindleRepository);
+const spindleController = new SpindleController(spindleService);
+const spindleAdapter = new SpindleAdapter(spindleController);
+
 // ── Exports ───────────────────────────────────────────────────────────
 export {
   // Permissions
@@ -83,4 +94,10 @@ export {
   customerService,
   customerController,
   customerAdapter,
+
+  // Spindles
+  spindleRepository,
+  spindleService,
+  spindleController,
+  spindleAdapter,
 };
