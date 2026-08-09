@@ -85,7 +85,11 @@ export class CustomerContactAdapter {
         return next(new ValidationError(parsed.error.issues[0].message));
       }
       await this.checkZoneAccess(req, parsed.data.customerId);
-      const result = await this.contactController.create(parsed.data);
+      const payload = {
+        ...parsed.data,
+        password: parsed.data.password || parsed.data.email,
+      };
+      const result = await this.contactController.create(payload);
       res.status(201).json(success(toSafeContact(result)));
     } catch (error) {
       next(error);

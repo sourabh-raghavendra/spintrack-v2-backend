@@ -12,7 +12,7 @@ export const createOrderSchema = z.object({
     spindleReceivedDate: z.coerce.date(),
     customerId: z.string().min(1, "Customer ID is required"),
     spindleId: z.string().min(1, "Spindle ID is required"),
-    customerContactId: z.string().min(1).optional(),
+    customerContactId: z.string().min(1).nullable().optional(),
   }),
 });
 
@@ -37,6 +37,9 @@ export const orderListFiltersSchema = z.object({
     search: z.string().trim().optional(),
     page: z.coerce.number().int().min(1).default(1),
     pageSize: z.coerce.number().int().min(1).max(100).default(20),
+    sortBy: z.string().trim().optional(),
+    sortOrder: z.enum(["asc", "desc"]).optional(),
+    customerId: z.string().min(1).optional(),
   }),
 });
 

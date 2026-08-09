@@ -9,6 +9,7 @@ import spindleRouter from "./spindle.routes";
 import orderRouter from "./order.routes";
 import customerContactRouter from "./customerContact.routes";
 import portalRouter from "./portal.routes";
+import reportLogRouter from "./reportLog.routes";
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.use("/tapers", taperRouter);
 router.use("/customers", customerRouter);
 router.use("/spindles", spindleRouter);
 router.use("/orders", orderRouter);
+router.use("/orders", reportLogRouter);
 router.use("/customer-contacts", customerContactRouter);
 router.use("/portal", portalRouter);
 

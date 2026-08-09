@@ -35,6 +35,7 @@ model Order {
   spindle         Spindle          @relation(fields: [spindleId], references: [id])
   createdBy       User             @relation(fields: [createdById], references: [id])
   customerContact CustomerContact? @relation(fields: [customerContactId], references: [id])
+  reportLogs      OrderReportLog[]
 
   @@map("orders")
 }

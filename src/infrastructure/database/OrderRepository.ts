@@ -47,6 +47,9 @@ export class OrderRepository implements IOrderRepository {
     if (filters.orderStage) {
       where.orderStage = filters.orderStage as OrderStage;
     }
+    if (filters.customerId) {
+      where.customerId = filters.customerId;
+    }
 
     if (visibleZones !== "ALL") {
       where.zone = { in: visibleZones as Zone[] };
@@ -69,13 +72,18 @@ export class OrderRepository implements IOrderRepository {
     const skip = (filters.page - 1) * filters.pageSize;
     const take = filters.pageSize;
 
+    let orderBy: any = { createdAt: "desc" };
+    if (filters.sortBy) {
+      orderBy = { [filters.sortBy]: filters.sortOrder || "asc" };
+    }
+
     const [items, total] = await Promise.all([
       prisma.order.findMany({
         where,
         skip,
         take,
         include: orderIncludes,
-        orderBy: { createdAt: "desc" },
+        orderBy,
       }) as Promise<OrderWithRelations[]>,
       prisma.order.count({ where }),
     ]);

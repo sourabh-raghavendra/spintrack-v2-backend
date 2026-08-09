@@ -1,0 +1,43 @@
+// ── ReportStatus ─────────────────────────────────────────────────────
+
+enum ReportStatus {
+  NOT_STARTED
+  ONGOING
+  COMPLETED
+}
+
+// ── OrderReportLog ───────────────────────────────────────────────────
+// Timeline. One row per (orderId, reportName) — created only when a
+// report is first initiated (no pre-seeded rows for all 13 reports at
+// order creation; a report simply has no row until "Initiate" is
+// clicked, and is treated as NOT_STARTED by default).
+//
+// reportName is validated at the application layer against the REPORTS
+// constant in src/domain/permission/permissions.ts, not a Prisma enum —
+// keeps the report list a single source of truth in one TS file, same
+// reasoning as report-write permission keys being derived from it.
+//
+// Deliberately no reopen/multi-cycle tracking — one row per report per
+// order captures a single open→close delta, per earlier design decision.
+
+model OrderReportLog {
+  id         String       @id @default(cuid())
+  orderId    String
+  reportName String
+  status     ReportStatus @default(NOT_STARTED)
+
+  openedAt   DateTime?
+  openedById String?
+  closedAt   DateTime?
+  closedById String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order    Order @relation(fields: [orderId], references: [id])
+  openedBy User? @relation("ReportOpenedBy", fields: [openedById], references: [id])
+  closedBy User? @relation("ReportClosedBy", fields: [closedById], references: [id])
+
+  @@unique([orderId, reportName])
+  @@map("order_report_log")
+}

@@ -15,6 +15,9 @@ export interface OrderListFilters {
   search?: string;
   page: number;
   pageSize: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  customerId?: string;
 }
 
 export interface IOrderRepository {

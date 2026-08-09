@@ -1,9 +1,9 @@
 // src/domain/portalAuth/PortalAuthService.ts
 import { ICustomerContactRepository } from "../customerContact/ICustomerContactRepository";
 import { CustomerContact } from "../../generated/prisma/client";
-import { comparePassword } from "../../utils/hash";
+import { comparePassword, hashPassword } from "../../utils/hash";
 import { signCustomerToken } from "../../utils/customerJwt";
-import { UnauthorizedError } from "../../errors/HttpError";
+import { UnauthorizedError, NotFoundError } from "../../errors/HttpError";
 
 export class PortalAuthService {
   constructor(private readonly contactRepository: ICustomerContactRepository) {}
@@ -32,5 +32,24 @@ export class PortalAuthService {
       token,
       contact: updatedContact,
     };
+  }
+
+  async changeOwnPassword(
+    contactId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const contact = await this.contactRepository.findById(contactId);
+    if (!contact) {
+      throw new NotFoundError("Contact not found");
+    }
+
+    const valid = await comparePassword(currentPassword, contact.password);
+    if (!valid) {
+      throw new UnauthorizedError("Current password is incorrect");
+    }
+
+    const newHash = await hashPassword(newPassword);
+    await this.contactRepository.update(contactId, { password: newHash });
   }
 }

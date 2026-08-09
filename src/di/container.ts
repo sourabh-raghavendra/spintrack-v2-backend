@@ -95,6 +95,17 @@ const portalAuthService = new PortalAuthService(customerContactRepository);
 const portalAuthController = new PortalAuthController(portalAuthService);
 const portalAuthAdapter = new PortalAuthAdapter(portalAuthController, customerContactRepository, customerRepository);
 
+// ── Order Report Log (Timeline) ──────────────────────────────────────
+import { OrderReportLogRepository } from "../infrastructure/database/OrderReportLogRepository";
+import { OrderReportLogService } from "../domain/reportLog/OrderReportLogService";
+import { OrderReportLogController } from "../domain/reportLog/OrderReportLogController";
+import { OrderReportLogAdapter } from "../http/adapters/reportLog.adapter";
+
+const orderReportLogRepository = new OrderReportLogRepository();
+const orderReportLogService = new OrderReportLogService(orderReportLogRepository, orderService);
+const orderReportLogController = new OrderReportLogController(orderReportLogService);
+const orderReportLogAdapter = new OrderReportLogAdapter(orderReportLogController);
+
 // ── Exports ───────────────────────────────────────────────────────────
 export {
   // Permissions
@@ -138,7 +149,6 @@ export {
   orderController,
   orderAdapter,
 
-  // Customer Contacts & Portal
   customerContactRepository,
   customerContactService,
   customerContactController,
@@ -146,4 +156,10 @@ export {
   portalAuthService,
   portalAuthController,
   portalAuthAdapter,
+
+  // Order Report Logs
+  orderReportLogRepository,
+  orderReportLogService,
+  orderReportLogController,
+  orderReportLogAdapter,
 };

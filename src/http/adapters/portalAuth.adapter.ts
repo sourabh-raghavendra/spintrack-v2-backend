@@ -5,7 +5,7 @@ import { ICustomerContactRepository } from "../../domain/customerContact/ICustom
 import { CustomerRepository } from "../../infrastructure/database/CustomerRepository";
 import { success } from "../../utils/response";
 import { ValidationError, NotFoundError } from "../../errors/HttpError";
-import { portalLoginSchema } from "../validation/portalAuth.schema";
+import { portalLoginSchema, portalChangePasswordSchema } from "../validation/portalAuth.schema";
 
 function toSafeContact(contact: any) {
   if (!contact) return null;
@@ -59,6 +59,23 @@ export class PortalAuthAdapter {
           customer: customer ? { customerName: customer.customerName } : null,
         })
       );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  changePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const parsed = portalChangePasswordSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return next(new ValidationError(parsed.error.issues[0].message));
+      }
+      
+      const contactId = req.customerAuth!.contactId;
+      const { currentPassword, newPassword } = parsed.data;
+      
+      await this.portalAuthController.changeOwnPassword(contactId, currentPassword, newPassword);
+      res.status(200).json(success(null));
     } catch (error) {
       next(error);
     }

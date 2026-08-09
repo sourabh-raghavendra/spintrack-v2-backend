@@ -8,4 +8,8 @@ export class PortalAuthController {
   async login(email: string, plainPassword: string): Promise<{ token: string; contact: CustomerContact }> {
     return this.portalAuthService.login(email, plainPassword);
   }
+
+  async changeOwnPassword(contactId: string, currentPassword: string, newPassword: string): Promise<void> {
+    return this.portalAuthService.changeOwnPassword(contactId, currentPassword, newPassword);
+  }
 }

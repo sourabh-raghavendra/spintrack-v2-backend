@@ -7,5 +7,6 @@ const router = Router();
 
 router.post("/auth/login", portalAuthAdapter.login);
 router.get("/me", customerAuthMiddleware, portalAuthAdapter.getMe);
+router.patch("/me/password", customerAuthMiddleware, portalAuthAdapter.changePassword);
 
 export default router;
