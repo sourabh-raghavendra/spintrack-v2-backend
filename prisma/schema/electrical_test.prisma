@@ -1,0 +1,12 @@
+model ElectricalTest {
+  id      String  @id @default(cuid())
+  orderId String  @unique
+  remark String? // placeholder — remaining Electrical Test fields added later, additively
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("electrical_test")
+}

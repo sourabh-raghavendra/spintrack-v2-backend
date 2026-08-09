@@ -1,0 +1,13 @@
+model FinalInspection {
+  id           String  @id @default(cuid())
+  orderId      String  @unique
+  blueMatching String? // placeholder — remaining Final Inspection fields (taper-driven,
+  // per TaperSpec.include logic) added later, additively
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("final_inspection")
+}

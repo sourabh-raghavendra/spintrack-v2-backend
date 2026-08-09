@@ -1,0 +1,12 @@
+model Deviations {
+  id      String   @id @default(cuid())
+  orderId String   @unique
+  deviationApprovalStatus Boolean? // placeholder — remaining Deviations fields added later, additively
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("deviations")
+}

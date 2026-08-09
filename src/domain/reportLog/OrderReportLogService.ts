@@ -1,4 +1,5 @@
 import { IOrderReportLogRepository } from "./IOrderReportLogRepository";
+import { IReportRecordRepository } from "./IReportRecordRepository";
 import { OrderService } from "../order/OrderService";
 import { REPORTS } from "../permission/permissions";
 import { ConflictError, ValidationError } from "../../errors/HttpError";
@@ -8,7 +9,8 @@ import { OrderReportLog } from "../../generated/prisma/client";
 export class OrderReportLogService {
   constructor(
     private readonly repository: IOrderReportLogRepository,
-    private readonly orderService: OrderService
+    private readonly orderService: OrderService,
+    private readonly reportRecordRepository: IReportRecordRepository,
   ) {}
 
   async getTimelineForOrder(orderId: string): Promise<any[]> {
@@ -54,6 +56,16 @@ export class OrderReportLogService {
       throw error;
     }
 
+    // Record creation hook
+    try {
+      await this.runCreationHook(orderId, reportName);
+    } catch (err: any) {
+      logger.error(
+        { err, orderId, reportName },
+        "Report creation hook failed"
+      );
+    }
+
     if (reportName === "incoming_alert") {
       try {
         await this.orderService.markOngoingFromIncomingAlert(orderId);
@@ -69,6 +81,13 @@ export class OrderReportLogService {
   }
 
   async closeReport(orderId: string, reportName: string, userId: string): Promise<OrderReportLog> {
+    if (reportName === "order_closure") {
+      const order = await this.orderService.getById(orderId);
+      if (order.orderStage !== "ONGOING") {
+        throw new ValidationError("Order must be ongoing before it can be closed");
+      }
+    }
+
     const log = await this.repository.findOne(orderId, reportName);
     if (!log || log.status !== "ONGOING") {
       throw new ValidationError(`"${reportName}" must be initiated before it can be closed`);
@@ -91,5 +110,45 @@ export class OrderReportLogService {
     }
 
     return result;
+  }
+
+  private async runCreationHook(orderId: string, reportName: string): Promise<void> {
+    switch (reportName) {
+      case "incoming_alert":
+        await this.reportRecordRepository.createBlankIncomingAlert(orderId);
+        break;
+      case "checksheet":
+        await this.reportRecordRepository.createBlankChecksheet(orderId);
+        break;
+      case "damage_report":
+        await this.reportRecordRepository.createBlankDamageReport(orderId);
+        break;
+      case "old_bearing_report":
+        await this.reportRecordRepository.createBlankBearings(orderId, false);
+        break;
+      case "new_bearing_report":
+        await this.reportRecordRepository.createBlankBearings(orderId, true);
+        break;
+      case "electrical_test":
+        await this.reportRecordRepository.createBlankElectricalTest(orderId);
+        break;
+      case "drawbar_details":
+        await this.reportRecordRepository.createBlankDrawbarDetails(orderId);
+        break;
+      case "final_inspection":
+        await this.reportRecordRepository.createBlankFinalInspection(orderId);
+        break;
+      case "testing_balancing":
+        await this.reportRecordRepository.createBlankTestingBalancing(orderId);
+        break;
+      case "remarks_for_customer":
+        await this.reportRecordRepository.createBlankRemarksForCustomer(orderId);
+        break;
+      case "order_closure":
+        await this.reportRecordRepository.createBlankOrderClosure(orderId);
+        break;
+      default:
+        break;
+    }
   }
 }

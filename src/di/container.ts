@@ -97,14 +97,23 @@ const portalAuthAdapter = new PortalAuthAdapter(portalAuthController, customerCo
 
 // ── Order Report Log (Timeline) ──────────────────────────────────────
 import { OrderReportLogRepository } from "../infrastructure/database/OrderReportLogRepository";
+import { ReportRecordRepository } from "../infrastructure/database/ReportRecordRepository";
 import { OrderReportLogService } from "../domain/reportLog/OrderReportLogService";
 import { OrderReportLogController } from "../domain/reportLog/OrderReportLogController";
 import { OrderReportLogAdapter } from "../http/adapters/reportLog.adapter";
 
 const orderReportLogRepository = new OrderReportLogRepository();
-const orderReportLogService = new OrderReportLogService(orderReportLogRepository, orderService);
+const reportRecordRepository = new ReportRecordRepository();
+const orderReportLogService = new OrderReportLogService(orderReportLogRepository, orderService, reportRecordRepository);
 const orderReportLogController = new OrderReportLogController(orderReportLogService);
 const orderReportLogAdapter = new OrderReportLogAdapter(orderReportLogController);
+
+// ── Generic Report Fields ─────────────────────────────────────────────
+import { ReportFieldService } from "../domain/reportLog/ReportFieldService";
+import { ReportFieldAdapter } from "../http/adapters/reportField.adapter";
+
+const reportFieldService = new ReportFieldService();
+const reportFieldAdapter = new ReportFieldAdapter(reportFieldService);
 
 // ── Exports ───────────────────────────────────────────────────────────
 export {
@@ -162,4 +171,7 @@ export {
   orderReportLogService,
   orderReportLogController,
   orderReportLogAdapter,
+
+  // Generic Report Fields
+  reportFieldAdapter,
 };

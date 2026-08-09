@@ -1,0 +1,33 @@
+// ── BearingPosition ──────────────────────────────────────────────────
+
+enum BearingPosition {
+  FRONT_1
+  FRONT_2
+  REAR_1
+  REAR_2
+  MECHANICAL_SEAL
+}
+
+// ── Bearing ──────────────────────────────────────────────────────────
+// One shared table covers BOTH "old_bearing_report" and
+// "new_bearing_report" — isNew distinguishes them, avoiding two
+// near-duplicate tables. One row per (orderId, isNew, position).
+
+model Bearing {
+  id       String          @id @default(cuid())
+  orderId  String
+  isNew    Boolean
+  position BearingPosition
+
+  arrangement String?
+  details     String?
+  quantity    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@unique([orderId, isNew, position])
+  @@map("bearings")
+}

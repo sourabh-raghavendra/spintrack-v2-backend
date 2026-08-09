@@ -3,6 +3,7 @@ import { OrderListFilters } from "./IOrderRepository";
 import { CreateOrderInput, UpdateOrderInput } from "../../http/validation/order.schema";
 import { Order } from "../../generated/prisma/client";
 import { RequestUser } from "../../types/common";
+import { generateOrderOnePagerPdf } from "../../utils/pdfGenerator";
 
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
@@ -33,5 +34,11 @@ export class OrderController {
 
   async remove(id: string): Promise<void> {
     return this.orderService.deleteOrder(id);
+  }
+
+  async getOnePagerPdf(id: string): Promise<Buffer> {
+    return this.orderService.getById(id).then((order) => {
+      return generateOrderOnePagerPdf(order);
+    });
   }
 }

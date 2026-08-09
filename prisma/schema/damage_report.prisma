@@ -1,0 +1,12 @@
+model DamageReport {
+  id      String  @id @default(cuid())
+  orderId String  @unique
+  bearingDamage String? // placeholder — remaining Damage Report fields added later, additively
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("damage_report")
+}

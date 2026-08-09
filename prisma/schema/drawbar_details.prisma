@@ -1,0 +1,12 @@
+model DrawbarDetails {
+  id      String  @id @default(cuid())
+  orderId String  @unique
+  arrangement String? // placeholder — remaining Drawbar Details fields added later, additively
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("drawbar_details")
+}

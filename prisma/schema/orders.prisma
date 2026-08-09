@@ -37,5 +37,22 @@ model Order {
   customerContact CustomerContact? @relation(fields: [customerContactId], references: [id])
   reportLogs      OrderReportLog[]
 
+  // Report tables — one relation per report/table (bearings and
+  // testing_balancing_trials are multi-row per order, no @unique on
+  // their side; the rest are 1:1 with the order)
+  incomingAlert          IncomingAlert?
+  checksheet             Checksheet?
+  damageReport           DamageReport?
+  electricalTest         ElectricalTest?
+  drawbarDetails         DrawbarDetails?
+  finalInspection        FinalInspection?
+  remarksForCustomer     RemarksForCustomer?
+  orderClosure           OrderClosure?
+  bearings               Bearing[]
+  inspectionMeasurements InspectionMeasurement[]
+  testingBalancing       TestingBalancing?
+  testingBalancingTrials TestingBalancingTrial[]
+  deviations             Deviations?
+
   @@map("orders")
 }

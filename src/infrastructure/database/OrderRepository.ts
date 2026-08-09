@@ -8,6 +8,9 @@ const orderIncludes = {
     select: {
       id: true,
       customerName: true,
+      customerId: true,
+      customerState: true,
+      customerCity: true,
     },
   },
   spindle: {
@@ -16,6 +19,12 @@ const orderIncludes = {
       make: true,
       type: true,
       serialNumber: true,
+      maxRpm: true,
+      taper: {
+        select: {
+          taperType: true,
+        },
+      },
     },
   },
   createdBy: {

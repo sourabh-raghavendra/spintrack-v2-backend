@@ -1,0 +1,12 @@
+model IncomingAlert {
+  id           String  @id @default(cuid())
+  orderId      String  @unique
+  spindleIssue String? // placeholder — remaining Incoming Alert fields added later, additively
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("incoming_alert")
+}

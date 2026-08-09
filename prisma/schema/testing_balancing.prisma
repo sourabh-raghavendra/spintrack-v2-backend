@@ -1,0 +1,44 @@
+// ── TestingBalancing ─────────────────────────────────────────────────
+// Header — one row per order (stabilized temp, vibration summary,
+// remark, checked/approved by — most fields deferred, one placeholder
+// kept for now).
+
+model TestingBalancing {
+  id      String  @id @default(cuid())
+  orderId String  @unique
+  stabilizedTemperature String? // placeholder — remaining header fields added later, additively
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("testing_balancing")
+}
+
+// ── TestingBalancingTrial ────────────────────────────────────────────
+// Trial rows — many per order, freely added ("+ Add Row" in the UI), no
+// unique constraint. FK directly to Order, not to TestingBalancing —
+// simpler, and a trial row's existence doesn't depend on the header row
+// already existing.
+
+model TestingBalancingTrial {
+  id      String @id @default(cuid())
+  orderId String
+
+  trialRunNumber  String?
+  rpm             String?
+  temp            String?
+  vibrationFront  String?
+  vibrationRear   String?
+  amp             String?
+  voltage         String?
+  time            String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("testing_balancing_trials")
+}

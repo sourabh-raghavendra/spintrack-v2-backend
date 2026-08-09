@@ -29,8 +29,27 @@ export class OrderAdapter {
         return next(new ValidationError(parsed.error.issues[0].message));
       }
       const order = await this.orderController.getById(parsed.data.id);
-      const buffer = await generateQrJpeg(order.jo);
+      const qrData = order.jo || order.rma;
+      const buffer = await generateQrJpeg(qrData);
       res.setHeader("Content-Type", "image/jpeg");
+      res.status(200).send(buffer);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getOnePager = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const parsed = orderIdParamSchema.safeParse(req.params);
+      if (!parsed.success) {
+        return next(new ValidationError(parsed.error.issues[0].message));
+      }
+      const buffer = await this.orderController.getOnePagerPdf(parsed.data.id);
+      res.setHeader("Content-Type", "application/pdf");
       res.status(200).send(buffer);
     } catch (error) {
       next(error);
