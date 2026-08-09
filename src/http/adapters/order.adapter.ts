@@ -9,6 +9,7 @@ import {
   updateOrderSchema,
   orderListFiltersSchema,
 } from "../validation/order.schema";
+import { generateQrJpeg } from "../../utils/qrCode";
 
 const orderIdParamSchema = z.object({
   id: z.string().min(1, "Order ID is required"),
@@ -16,6 +17,25 @@ const orderIdParamSchema = z.object({
 
 export class OrderAdapter {
   constructor(private readonly orderController: OrderController) {}
+
+  getQrCode = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const parsed = orderIdParamSchema.safeParse(req.params);
+      if (!parsed.success) {
+        return next(new ValidationError(parsed.error.issues[0].message));
+      }
+      const order = await this.orderController.getById(parsed.data.id);
+      const buffer = await generateQrJpeg(order.jo);
+      res.setHeader("Content-Type", "image/jpeg");
+      res.status(200).send(buffer);
+    } catch (error) {
+      next(error);
+    }
+  };
 
   private checkAdmin(req: Request): void {
     if (!req.user || !req.user.isAdmin) {
