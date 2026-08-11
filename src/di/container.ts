@@ -115,6 +115,44 @@ import { ReportFieldAdapter } from "../http/adapters/reportField.adapter";
 const reportFieldService = new ReportFieldService();
 const reportFieldAdapter = new ReportFieldAdapter(reportFieldService);
 
+// ── Report Personnel ──────────────────────────────────────────────────
+import { ReportPersonnelService } from "../domain/reportPersonnel/ReportPersonnelService";
+import { ReportPersonnelController } from "../domain/reportPersonnel/ReportPersonnelController";
+import { ReportPersonnelAdapter } from "../http/adapters/ReportPersonnelAdapter";
+
+const reportPersonnelService = new ReportPersonnelService();
+const reportPersonnelController = new ReportPersonnelController(reportPersonnelService);
+const reportPersonnelAdapter = new ReportPersonnelAdapter(reportPersonnelController);
+
+// ── Notes ─────────────────────────────────────────────────────────────
+import { NoteService } from "../domain/note/NoteService";
+import { NoteController } from "../domain/note/NoteController";
+import { NoteAdapter } from "../http/adapters/NoteAdapter";
+
+const noteService = new NoteService();
+const noteController = new NoteController(noteService);
+const noteAdapter = new NoteAdapter(noteController);
+
+// ── Media ─────────────────────────────────────────────────────────────
+import { S3StorageService } from "../infrastructure/storage/S3StorageService";
+import { MediaService } from "../domain/media/MediaService";
+import { MediaController } from "../domain/media/MediaController";
+import { MediaAdapter } from "../http/adapters/MediaAdapter";
+
+const storageService = new S3StorageService();
+const mediaService = new MediaService(storageService);
+const mediaController = new MediaController(mediaService);
+const mediaAdapter = new MediaAdapter(mediaController);
+
+// ── Customer Portal Orders ────────────────────────────────────────────
+import { PortalOrderService } from "../domain/portal/PortalOrderService";
+import { PortalOrderController } from "../domain/portal/PortalOrderController";
+import { PortalOrderAdapter } from "../http/adapters/PortalOrderAdapter";
+
+const portalOrderService = new PortalOrderService(storageService);
+const portalOrderController = new PortalOrderController(portalOrderService);
+const portalOrderAdapter = new PortalOrderAdapter(portalOrderController);
+
 // ── Exports ───────────────────────────────────────────────────────────
 export {
   // Permissions
@@ -174,4 +212,16 @@ export {
 
   // Generic Report Fields
   reportFieldAdapter,
+
+  // Report Personnel
+  reportPersonnelAdapter,
+
+  // Notes
+  noteAdapter,
+
+  // Media
+  mediaAdapter,
+
+  // Portal
+  portalOrderAdapter,
 };

@@ -2,7 +2,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { requirePermission } from "../middleware/permission.middleware";
-import { userAdapter } from "../../di/container";
+import { userAdapter, reportPersonnelAdapter } from "../../di/container";
 
 const router = Router();
 
@@ -53,6 +53,12 @@ router.patch(
   authMiddleware,
   requirePermission("users:reset_password"),
   userAdapter.adminResetPassword,
+);
+
+router.get(
+  "/:userId/inspection-history",
+  authMiddleware,
+  reportPersonnelAdapter.getInspectionHistory,
 );
 
 export default router;

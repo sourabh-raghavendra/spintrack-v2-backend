@@ -1,0 +1,30 @@
+// ── ReportPersonnel ──────────────────────────────────────────────────
+// Who did what, on which report, for which order — cleaning, checking,
+// dismantling, assembling, testing/approving. One shared table across
+// all reports (not per-field columns), enabling simple "everything this
+// user has done" queries for analytics.
+//
+// role is a specific string per report (e.g. "cleaned_by", "checked_by",
+// "dismantled_by", "dismantle_supported_by") — validated at the
+// application layer against a per-report constants list, not a Prisma
+// enum, matching the same pattern as measurementKey/reportName elsewhere.
+//
+// The unique constraint enforces "no name twice for the same report and
+// same action" — a second attempt to add the same (order, report, role,
+// user) combination is rejected at the DB level.
+
+model ReportPersonnel {
+  id         String   @id @default(cuid())
+  orderId    String
+  reportName String
+  userId     String
+  role       String
+
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@unique([orderId, reportName, role, userId])
+  @@map("report_personnel")
+}

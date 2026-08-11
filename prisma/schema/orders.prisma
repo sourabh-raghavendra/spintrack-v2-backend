@@ -53,6 +53,9 @@ model Order {
   testingBalancing       TestingBalancing?
   testingBalancingTrials TestingBalancingTrial[]
   deviations             Deviations?
+  reportPersonnel        ReportPersonnel[]
+  notes                  Note[]
+  media                  Media[]
 
   @@map("orders")
 }

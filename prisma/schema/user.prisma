@@ -23,12 +23,15 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  permissions       UserPermission[]
-  createdSpindles   Spindle[]
-  createdOrders     Order[]
-  openedReportLogs  OrderReportLog[]        @relation("ReportOpenedBy")
-  closedReportLogs  OrderReportLog[]        @relation("ReportClosedBy")
-  decidedDeviations InspectionMeasurement[] @relation("DeviationDecidedBy")
+  permissions            UserPermission[]
+  createdSpindles        Spindle[]
+  createdOrders          Order[]
+  openedReportLogs       OrderReportLog[]        @relation("ReportOpenedBy")
+  closedReportLogs       OrderReportLog[]        @relation("ReportClosedBy")
+  decidedDeviations      InspectionMeasurement[] @relation("DeviationDecidedBy")
+  reportPersonnelEntries ReportPersonnel[]
+  notes                  Note[]
+  uploadedMedia          Media[]
 
   @@map("users")
 }

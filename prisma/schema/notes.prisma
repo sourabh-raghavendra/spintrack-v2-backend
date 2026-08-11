@@ -1,0 +1,24 @@
+// ── Note ─────────────────────────────────────────────────────────────
+// Internal notes, scoped to a specific order + report. One order+report
+// can have any number of notes — no unique constraint. Notes are never
+// truly deleted by a non-privileged user's own action alone; edit/delete
+// require notes:edit / notes:delete specifically, separate from
+// notes:write (creation).
+
+model Note {
+  id         String @id @default(cuid())
+  orderId    String
+  reportName String
+  content    String
+  isEdited   Boolean @default(false)
+
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  order     Order @relation(fields: [orderId], references: [id])
+  createdBy User  @relation(fields: [createdById], references: [id])
+
+  @@index([orderId, reportName])
+  @@map("notes")
+}

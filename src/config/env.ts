@@ -25,6 +25,13 @@ const envSchema = z.object({
   SMTP_USER: z.string().min(1, "SMTP_USER is required"),
   SMTP_PASS: z.string().min(1, "SMTP_PASS is required"),
   CORS_ORIGIN: z.string().min(1, "CORS_ORIGIN is required").optional(),
+
+  // DigitalOcean Spaces
+  DO_SPACES_BUCKET: z.string().min(1, "DO_SPACES_BUCKET is required"),
+  DO_SPACES_REGION: z.string().min(1, "DO_SPACES_REGION is required"),
+  DO_SPACES_SECRET: z.string().min(1, "DO_SPACES_SECRET is required"),
+  DO_SPACES_ENDPOINT: z.string().min(1, "DO_SPACES_ENDPOINT is required"),
+  DO_SPACES_KEY: z.string().min(1, "DO_SPACES_KEY is required"),
 });
 
 const result = envSchema.safeParse(process.env);

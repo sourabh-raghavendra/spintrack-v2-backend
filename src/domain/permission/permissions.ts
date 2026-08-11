@@ -94,6 +94,8 @@ export const PERMISSIONS = {
   // Notes (internal, per order/report)
   NOTES_MANAGE: "notes:manage",
   NOTES_WRITE: "notes:write",
+  NOTES_EDIT: "notes:edit",
+  NOTES_DELETE: "notes:delete",
 
   // Tapers — admin config screen, single permission covers manage
   TAPERS_MANAGE: "tapers:manage",
