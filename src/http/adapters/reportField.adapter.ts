@@ -52,7 +52,8 @@ export class ReportFieldAdapter {
         parsedParams.data.orderId,
         parsedParams.data.reportName,
         parsedBody.data.body.recordKey,
-        parsedBody.data.body.fields
+        parsedBody.data.body.fields,
+        req.user!.id
       );
       res.status(200).json({ success: true, data });
     } catch (err) {
@@ -161,36 +162,7 @@ export class ReportFieldAdapter {
     }
   };
 
-  flagDeviation = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const parsedParams = testingBalancingTrialParamSchema.safeParse(req.params);
-      if (!parsedParams.success) {
-        return next(new ValidationError(parsedParams.error.issues[0].message));
-      }
-      const measurementKeySchema = z.object({
-        body: z.object({
-          measurementKey: z.string().min(1),
-        }),
-      });
-      const parsedBody = measurementKeySchema.safeParse(req);
-      if (!parsedBody.success) {
-        return next(new ValidationError(parsedBody.error.issues[0].message));
-      }
-      const userId = req.user!.id;
-      const data = await this.service.flagDeviation(
-        parsedParams.data.orderId,
-        parsedBody.data.body.measurementKey,
-        userId
-      );
-      res.status(200).json({ success: true, data });
-    } catch (err) {
-      next(err);
-    }
-  };
+
 
   approveDeviation = async (
     req: Request,
@@ -219,6 +191,19 @@ export class ReportFieldAdapter {
         userId,
         parsedBody.data.body.remark
       );
+      res.status(200).json({ success: true, data });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  listPendingApprovals = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const data = await this.service.listOrdersPendingDeviationApproval(req.user);
       res.status(200).json({ success: true, data });
     } catch (err) {
       next(err);

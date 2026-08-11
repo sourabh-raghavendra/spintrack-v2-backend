@@ -24,13 +24,14 @@ export const testingBalancingTrialUpdateParamSchema = z.object({
 
 export const createTestingBalancingTrialSchema = z.object({
   body: z.object({
-    trialRunNumber: z.number().int().optional(),
-    rpm: z.number().int().optional(),
-    temp: z.number().optional(),
-    vibrationAmount: z.number().optional(),
-    phaseAngle: z.number().optional(),
-    balanceMassAdded: z.number().optional(),
-    remarks: z.string().optional(),
+    trialRunNumber: z.string().optional(),
+    rpm: z.string().optional(),
+    temp: z.string().optional(),
+    vibrationFront: z.string().optional(),
+    vibrationRear: z.string().optional(),
+    amp: z.string().optional(),
+    voltage: z.string().optional(),
+    time: z.string().optional(),
   }),
 });
 

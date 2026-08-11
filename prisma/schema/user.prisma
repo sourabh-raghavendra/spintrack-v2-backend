@@ -28,7 +28,6 @@ model User {
   createdOrders     Order[]
   openedReportLogs  OrderReportLog[]        @relation("ReportOpenedBy")
   closedReportLogs  OrderReportLog[]        @relation("ReportClosedBy")
-  flaggedDeviations InspectionMeasurement[] @relation("DeviationFlaggedBy")
   decidedDeviations InspectionMeasurement[] @relation("DeviationDecidedBy")
 
   @@map("users")

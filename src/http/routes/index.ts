@@ -11,6 +11,9 @@ import customerContactRouter from "./customerContact.routes";
 import portalRouter from "./portal.routes";
 import reportLogRouter from "./reportLog.routes";
 import reportFieldRouter from "./reportField.routes";
+import { authMiddleware } from "../middleware/auth.middleware";
+import { requirePermission } from "../middleware/permission.middleware";
+import { reportFieldAdapter } from "../../di/container";
 
 const router = Router();
 
@@ -26,5 +29,12 @@ router.use("/orders", reportLogRouter);
 router.use("/orders", reportFieldRouter);
 router.use("/customer-contacts", customerContactRouter);
 router.use("/portal", portalRouter);
+
+router.get(
+  "/deviations/orders",
+  authMiddleware,
+  requirePermission("deviations:write"),
+  reportFieldAdapter.listPendingApprovals
+);
 
 export default router;

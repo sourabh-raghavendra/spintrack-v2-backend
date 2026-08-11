@@ -1,9 +1,9 @@
 model RemarksForCustomer {
   id      String  @id @default(cuid())
   orderId String  @unique
-  remark String? // placeholder — may later reconcile with the general per-order
-                  // Notes domain (still pending); kept as its own report table for
-                  // now since it's tracked as its own entry in order_report_log
+  remark  String? // placeholder — may later reconcile with the general per-order
+  // Notes domain (still pending); kept as its own report table for
+  // now since it's tracked as its own entry in order_report_log
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

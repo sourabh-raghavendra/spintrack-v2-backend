@@ -52,11 +52,6 @@ router.get(
   reportFieldAdapter.listDeviations
 );
 
-router.post(
-  "/:orderId/reports/deviations/flag",
-  requirePermission("deviations:write"),
-  reportFieldAdapter.flagDeviation
-);
 
 router.post(
   "/:orderId/reports/deviations/approve",

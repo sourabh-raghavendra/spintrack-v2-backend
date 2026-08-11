@@ -25,7 +25,8 @@ export class ReportFieldService {
     orderId: string,
     reportName: string,
     recordKey: Record<string, any> | undefined,
-    fields: Record<string, any>
+    fields: Record<string, any>,
+    userId: string
   ): Promise<any> {
     const config = REPORT_TABLE_CONFIG[reportName];
     if (!config) {
@@ -42,12 +43,21 @@ export class ReportFieldService {
       );
     }
 
+    // Automatically parse date strings (YYYY-MM-DD) into Date objects, mimicking date coercion
+    const processedFields: any = { ...fields };
+    for (const key of Object.keys(processedFields)) {
+      const val = processedFields[key];
+      if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        processedFields[key] = new Date(val);
+      }
+    }
+
     const whereClause = this.buildWhere(orderId, reportName, recordKey);
-    const createData = this.buildCreateData(orderId, reportName, recordKey, fields);
+    const createData = this.buildCreateData(orderId, reportName, recordKey, processedFields);
 
     return prisma[config.prismaModel as any].upsert({
       where: whereClause,
-      update: fields,
+      update: processedFields,
       create: createData,
     });
   }
@@ -87,54 +97,19 @@ export class ReportFieldService {
     return prisma.inspectionMeasurement.findMany({
       where: {
         orderId,
-        deviationStatus: {
-          in: ["PENDING", "APPROVED"],
-        },
+        OR: [
+          { deviationApproved: true },
+          {
+            OR: [{ remark: false }, { remarkAfterRework: false }],
+            OR: [
+              { deviationApproved: null },
+              { deviationApproved: false },
+            ],
+          },
+        ],
       },
       include: {
-        flaggedBy: { select: { id: true, name: true } },
         decidedBy: { select: { id: true, name: true } },
-      },
-    });
-  }
-
-  async flagDeviation(
-    orderId: string,
-    measurementKey: string,
-    userId: string
-  ): Promise<any> {
-    const measurement = await prisma.inspectionMeasurement.findUnique({
-      where: {
-        orderId_measurementKey: {
-          orderId,
-          measurementKey,
-        },
-      },
-    });
-
-    if (!measurement) {
-      throw new NotFoundError(
-        `Measurement "${measurementKey}" not found for order ${orderId}`
-      );
-    }
-
-    if (measurement.deviationStatus !== "NONE") {
-      throw new ConflictError(
-        `Measurement "${measurementKey}" is already flagged or approved as a deviation`
-      );
-    }
-
-    return prisma.inspectionMeasurement.update({
-      where: {
-        orderId_measurementKey: {
-          orderId,
-          measurementKey,
-        },
-      },
-      data: {
-        deviationStatus: "PENDING",
-        flaggedById: userId,
-        flaggedAt: new Date(),
       },
     });
   }
@@ -160,9 +135,13 @@ export class ReportFieldService {
       );
     }
 
-    if (measurement.deviationStatus !== "PENDING") {
+    const isPending =
+      (measurement.remark === false || measurement.remarkAfterRework === false) &&
+      measurement.deviationApproved !== true;
+
+    if (!isPending) {
       throw new ValidationError(
-        `Measurement "${measurementKey}" must be in PENDING status before it can be approved`
+        `Measurement "${measurementKey}" is not up for deviation review.`
       );
     }
 
@@ -174,12 +153,78 @@ export class ReportFieldService {
         },
       },
       data: {
-        deviationStatus: "APPROVED",
+        deviationApproved: true,
         decidedById: userId,
         decidedAt: new Date(),
         deviationRemark: deviationRemark ?? null,
       },
     });
+  }
+
+  async listOrdersPendingDeviationApproval(requestingUser: any): Promise<any[]> {
+    let visibleZones: string[] | "ALL" = "ALL";
+
+    if (!requestingUser.isAdmin) {
+      const prefix = "orders:view_zone_";
+      visibleZones = requestingUser.permissions
+        .filter((p: string) => p.startsWith(prefix))
+        .map((p: string) => p.substring(prefix.length).toUpperCase());
+
+      if (visibleZones.length === 0) {
+        return [];
+      }
+    }
+
+    // 1. Find distinct orderIds matching derived pending deviation condition
+    const measurements = await prisma.inspectionMeasurement.findMany({
+      where: {
+        OR: [{ remark: false }, { remarkAfterRework: false }],
+        OR: [
+          { deviationApproved: null },
+          { deviationApproved: false },
+        ],
+      },
+      select: { orderId: true },
+      distinct: ["orderId"],
+    });
+    const orderIds = measurements.map((m) => m.orderId);
+
+    // 2. Fetch those orders, filtered to orderStage = ONGOING, with customer name and matching zone
+    const orderWhereClause: any = {
+      id: { in: orderIds },
+      orderStage: "ONGOING",
+    };
+
+    if (visibleZones !== "ALL") {
+      orderWhereClause.zone = { in: visibleZones as any };
+    }
+
+    const orders = await prisma.order.findMany({
+      where: orderWhereClause,
+      include: { customer: { select: { customerName: true } } },
+    });
+
+    // 3. For each order, look up its "deviations" report_log status
+    const reportLogs = await prisma.orderReportLog.findMany({
+      where: {
+        orderId: { in: orders.map((o) => o.id) },
+        reportName: "deviations",
+      },
+    });
+    const statusByOrderId = new Map(reportLogs.map((r) => [r.orderId, r.status]));
+
+    // Filter out orders where the deviations report is already COMPLETED
+    const pendingOrders = orders.filter(
+      (o) => statusByOrderId.get(o.id) !== "COMPLETED"
+    );
+
+    return pendingOrders.map((order) => ({
+      orderId: order.id,
+      jo: order.jo,
+      rma: order.rma,
+      customerName: order.customer?.customerName || "—",
+      deviationsReportStatus: statusByOrderId.get(order.id) ?? "NOT_STARTED",
+    }));
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────

@@ -14,40 +14,6 @@
 // no bearing on how data is stored or queried, and lives entirely in a
 // frontend-only constant mapping measurementKey → category/label.
 
-// ── DeviationStatus ──────────────────────────────────────────────────
-// Lives on InspectionMeasurement, not a separate table — a deviation is
-// inherently a property of one specific measurement. "APPROVED" is the
-// operational equivalent of "passed under deviation" — that phrase is
-// derived at display time, not stored as separate text. No REJECTED
-// status — manager approval is the only decision path.
-
-enum DeviationStatus {
-  NONE
-  PENDING
-  APPROVED
-}
-
-// ── InspectionMeasurement ────────────────────────────────────────────
-// EAV-style — one row per (orderId, measurementKey), avoiding ~25+
-// near-duplicate columns. measurementKey is validated at the
-// application layer against a constants list, not a Prisma enum.
-//
-// dia/permissibleValues/actualValue/valueAfterRework are Json (stored
-// as jsonb on Postgres) because a single measurement can hold multiple
-// stacked values (e.g. two permissible-range numbers), not just one
-// scalar — confirmed against real UI reference. remark/remarkAfterRework
-// stay plain strings since they're free text, not value sets.
-//
-// Sidebar grouping/categorization (Bearing Shaft, Bearing Housing, Lock
-// Sleeve Interference, etc.) is DELIBERATELY NOT a column here — it has
-// no bearing on how data is stored or queried, and lives entirely in a
-// frontend-only constant mapping measurementKey → category/label.
-//
-// Deviation fields: a QC-flagged "not accepted" remark/remarkAfterRework
-// can be escalated to deviationStatus=PENDING; a manager then approves
-// it (deviationStatus=APPROVED). This is the entire data source for the
-// "Deviations" report tile — there is no separate deviations table.
-
 model InspectionMeasurement {
   id             String @id @default(cuid())
   orderId        String
@@ -56,22 +22,19 @@ model InspectionMeasurement {
   dia               Json?
   permissibleValues Json?
   actualValue       Json?
-  remark            String?
+  remark            Boolean?
   valueAfterRework  Json?
-  remarkAfterRework String?
+  remarkAfterRework Boolean?
 
-  deviationStatus DeviationStatus @default(NONE)
-  flaggedById     String?
-  flaggedAt       DateTime?
-  decidedById     String?
-  decidedAt       DateTime?
-  deviationRemark String?
+  deviationApproved Boolean?
+  decidedById       String?
+  decidedAt         DateTime?
+  deviationRemark   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   order     Order @relation(fields: [orderId], references: [id])
-  flaggedBy User? @relation("DeviationFlaggedBy", fields: [flaggedById], references: [id])
   decidedBy User? @relation("DeviationDecidedBy", fields: [decidedById], references: [id])
 
   @@unique([orderId, measurementKey])
