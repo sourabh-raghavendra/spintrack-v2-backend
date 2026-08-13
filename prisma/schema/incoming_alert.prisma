@@ -1,7 +1,13 @@
 model IncomingAlert {
-  id           String  @id @default(cuid())
-  orderId      String  @unique
-  spindleIssue String? // placeholder — remaining Incoming Alert fields added later, additively
+  id                             String   @id @default(cuid())
+  orderId                        String   @unique
+  spindleIssue                   String?
+  firstTimeCustomer              Boolean?
+  customerPaymentPending         Boolean?
+  dispatchWithoutClearance       Boolean?
+  dispatchWithoutClearanceReason String?
+  salesApproval                  Boolean?
+  financeApproval                Boolean?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

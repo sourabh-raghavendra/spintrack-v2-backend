@@ -1,0 +1,1 @@
+ALTER TABLE "orders" ADD COLUMN "isUnderWarranty" BOOLEAN NOT NULL DEFAULT false;

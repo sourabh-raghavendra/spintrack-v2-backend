@@ -19,4 +19,8 @@ export class PortalOrderController {
   async getOrderRemarks(orderId: string, customerId: string) {
     return this.service.getOrderRemarks(orderId, customerId);
   }
+
+  async getFinalInspectionPdf(orderId: string, customerId: string) {
+    return this.service.getFinalInspectionPdf(orderId, customerId);
+  }
 }

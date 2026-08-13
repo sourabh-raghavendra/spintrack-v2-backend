@@ -1,8 +1,13 @@
 model OrderClosure {
-  id          String    @id @default(cuid())
-  orderId     String    @unique
-  closureDate DateTime? // placeholder — remaining Order Closure fields
-  // (invoice, warranty, pack id, etc.) added later, additively
+  id                        String    @id @default(cuid())
+  orderId                   String    @unique
+  closureDate               DateTime?
+  warrantyValidTill         DateTime?
+  packId                    String?
+  invoiceNo                 String?
+  invoiceDate               DateTime?
+  outstandingBalanceClosure String?
+  financeApprovalClosure    Boolean?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

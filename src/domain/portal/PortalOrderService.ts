@@ -2,6 +2,7 @@
 import prisma from "../../config/database";
 import { NotFoundError } from "../../errors/HttpError";
 import { IStorageService } from "../../infrastructure/storage/IStorageService";
+import { FinalInspectionPdfService } from "../finalInspectionPdf/FinalInspectionPdfService";
 
 export class PortalOrderService {
   constructor(private readonly storage: IStorageService) {}
@@ -72,5 +73,12 @@ export class PortalOrderService {
     return prisma.remarksForCustomer.findUnique({
       where: { orderId },
     });
+  }
+
+  async getFinalInspectionPdf(orderId: string, customerId: string) {
+    // Ensures ownership/access verification
+    await this.getOrderDetails(orderId, customerId);
+    const finalInspectionService = new FinalInspectionPdfService();
+    return finalInspectionService.assembleData(orderId);
   }
 }

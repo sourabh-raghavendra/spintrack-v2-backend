@@ -1,7 +1,15 @@
 model Checksheet {
-  id      String  @id @default(cuid())
-  orderId String  @unique
-  spindleCondition String? // placeholder — remaining Checksheet fields added later, additively
+  id               String  @id @default(cuid())
+  orderId          String  @unique
+  box              String?
+  toolHolder       String?
+  cylinder         String?
+  proxySwitch      String?
+  tenon            String?
+  pulley           String?
+  drawbar          String?
+  speedSensor      String?
+  spindleCondition String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

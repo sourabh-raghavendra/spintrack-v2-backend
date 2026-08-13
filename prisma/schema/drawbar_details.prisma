@@ -1,7 +1,14 @@
 model DrawbarDetails {
-  id      String  @id @default(cuid())
-  orderId String  @unique
-  arrangement String? // placeholder — remaining Drawbar Details fields added later, additively
+  id                             String  @id @default(cuid())
+  orderId                        String  @unique
+  arrangement                    String?
+  drawBarArrangementOd           String?
+  drawBarArrangementId           String?
+  drawBarArrangementThickness    String?
+  drawBarArrangementHeight       String?
+  drawBarArrangementQuantity     String?
+  drawBarArrangementLength       String?
+  beforeDismantlingClampingForce String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

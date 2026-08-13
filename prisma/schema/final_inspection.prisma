@@ -1,8 +1,26 @@
 model FinalInspection {
-  id           String  @id @default(cuid())
-  orderId      String  @unique
-  blueMatching String? // placeholder — remaining Final Inspection fields (taper-driven,
-  // per TaperSpec.include logic) added later, additively
+  id                          String  @id @default(cuid())
+  orderId                     String  @unique
+  afterGrindingROofShaft      String?
+  goNoGo                      String?
+  blueMatching                String?
+  spacerSizeOfNNBearing       String?
+  housingDepth                String?
+  bearingStackLength          String?
+  preloadOfCover              String?
+  boreRO                      String?
+  frontBearingTool            String?
+  rearSideRO                  String?
+  faceROHSK                   String?
+  mandrelRO300WithStud        Json?
+  mandrelRO300WithDrawbar     Json?
+  clampingForceFinal          String?
+  axialPlay                   String?
+  radialPlay                  String?
+  axialFloat                  String?
+  rearBearingTolerance        String?
+  totalShaftHeightAfterRework String?
+  taperOdRunout               String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

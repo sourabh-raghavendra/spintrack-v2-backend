@@ -1,7 +1,19 @@
 model DamageReport {
-  id      String  @id @default(cuid())
-  orderId String  @unique
-  bearingDamage String? // placeholder — remaining Damage Report fields added later, additively
+  id                   String  @id @default(cuid())
+  orderId              String  @unique
+  bearingDamage        String?
+  shaftTaper           String?
+  shaftOdDamage        String?
+  mechanicalSeal       String?
+  pulleyDamage         String?
+  encoderDamage        String?
+  rotaryUnion          String?
+  spacerDistanceSleeve String?
+  tenonDamage          String?
+  oRings               String?
+  drawbarColletes      String?
+  springDamage         String?
+  sensorsDamage        String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

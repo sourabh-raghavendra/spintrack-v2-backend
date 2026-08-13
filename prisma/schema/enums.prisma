@@ -50,3 +50,10 @@ enum OrderStage {
   COMPLETED
   ARCHIVED
 }
+
+enum SpindleType {
+  BELT_DRIVEN
+  DIRECT_DRIVEN
+  GEAR_DRIVEN
+  INTEGRATED
+}

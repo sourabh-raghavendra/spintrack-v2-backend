@@ -5,10 +5,11 @@
 // spindles:* permission set, which has no delete/deactivate key).
 
 model Spindle {
-  id           String  @id @default(cuid())
-  serialNumber String  @unique
+  id           String      @id @default(cuid())
+  serialNumber String      @unique
   make         String
-  type         String
+  type         SpindleType // was String
+  machine      String? // NEW
   taperId      String
   maxRpm       String? // kept as String — legacy data isn't strictly numeric
 

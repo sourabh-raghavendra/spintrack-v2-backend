@@ -153,6 +153,33 @@ const portalOrderService = new PortalOrderService(storageService);
 const portalOrderController = new PortalOrderController(portalOrderService);
 const portalOrderAdapter = new PortalOrderAdapter(portalOrderController);
 
+// ── Final Inspection PDF ──────────────────────────────────────────────
+import { FinalInspectionPdfService } from "../domain/finalInspectionPdf/FinalInspectionPdfService";
+import { FinalInspectionPdfAdapter } from "../http/adapters/FinalInspectionPdfAdapter";
+
+const finalInspectionPdfService = new FinalInspectionPdfService();
+const finalInspectionPdfAdapter = new FinalInspectionPdfAdapter(finalInspectionPdfService);
+
+// ── Analytics ─────────────────────────────────────────────────────────
+import { AnalyticsService } from "../domain/analytics/AnalyticsService";
+import { AnalyticsController } from "../domain/analytics/AnalyticsController";
+import { AnalyticsAdapter } from "../http/adapters/analytics.adapter";
+
+const analyticsService = new AnalyticsService();
+const analyticsController = new AnalyticsController(analyticsService);
+const analyticsAdapter = new AnalyticsAdapter(analyticsController);
+
+// ── Warranty ──────────────────────────────────────────────────────────
+import { WarrantyService } from "../domain/warranty/WarrantyService";
+import { WarrantyCertificateService } from "../domain/warranty/WarrantyCertificateService";
+import { WarrantyController } from "../domain/warranty/WarrantyController";
+import { WarrantyAdapter } from "../http/adapters/warranty.adapter";
+
+const warrantyService = new WarrantyService();
+const warrantyCertificateService = new WarrantyCertificateService();
+const warrantyController = new WarrantyController(warrantyService, warrantyCertificateService);
+const warrantyAdapter = new WarrantyAdapter(warrantyController);
+
 // ── Exports ───────────────────────────────────────────────────────────
 export {
   // Permissions
@@ -224,4 +251,13 @@ export {
 
   // Portal
   portalOrderAdapter,
+
+  // Final Inspection PDF
+  finalInspectionPdfAdapter,
+
+  // Analytics
+  analyticsAdapter,
+
+  // Warranty
+  warrantyAdapter,
 };

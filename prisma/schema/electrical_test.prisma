@@ -1,12 +1,16 @@
-model ElectricalTest {
-  id      String  @id @default(cuid())
-  orderId String  @unique
-  remark String? // placeholder — remaining Electrical Test fields added later, additively
+model ElectricalTestMeasurement {
+  id           String  @id @default(cuid())
+  orderId      String
+  testKey      String
+  specValue    String? // only used for the 3 rows with a spec dropdown (motor type, thermistor, power unit)
+  beforeRework String?
+  afterRework  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   order Order @relation(fields: [orderId], references: [id])
 
-  @@map("electrical_test")
+  @@unique([orderId, testKey])
+  @@map("electrical_test_measurements")
 }

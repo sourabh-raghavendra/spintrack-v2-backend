@@ -285,6 +285,15 @@ export class ReportFieldService {
       };
     }
 
+    if (config.prismaModel === "electricalTestMeasurement") {
+      return {
+        orderId_testKey: {
+          orderId,
+          testKey: recordKey.testKey,
+        },
+      };
+    }
+
     throw new ValidationError(`Unknown mapping for model: ${config.prismaModel}`);
   }
 

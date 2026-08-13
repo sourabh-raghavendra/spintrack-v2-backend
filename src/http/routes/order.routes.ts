@@ -2,7 +2,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { requirePermission } from "../middleware/permission.middleware";
-import { orderAdapter } from "../../di/container";
+import { orderAdapter, finalInspectionPdfAdapter } from "../../di/container";
 
 const router = Router();
 
@@ -12,6 +12,7 @@ router.get("/", requirePermission("orders:read"), orderAdapter.list);
 router.get("/:id", requirePermission("orders:read"), orderAdapter.getById);
 router.get("/:id/qr", requirePermission("orders:read"), orderAdapter.getQrCode);
 router.get("/:id/one-pager", requirePermission("orders:generate_pdf"), orderAdapter.getOnePager);
+router.get("/:id/reports/final_inspection/pdf", requirePermission("orders:generate_pdf"), finalInspectionPdfAdapter.generatePdf);
 router.post("/", requirePermission("orders:create"), orderAdapter.create);
 router.patch("/:id", requirePermission("orders:update"), orderAdapter.update);
 router.post("/:id/archive", orderAdapter.archive);

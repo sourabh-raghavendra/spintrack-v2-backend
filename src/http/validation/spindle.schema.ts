@@ -5,7 +5,8 @@ export const createSpindleSchema = z.object({
   body: z.object({
     serialNumber: z.string().trim().min(1).max(100),
     make: z.string().trim().min(1).max(100),
-    type: z.string().trim().min(1).max(100),
+    type: z.enum(["BELT_DRIVEN", "DIRECT_DRIVEN", "GEAR_DRIVEN", "INTEGRATED"]),
+    machine: z.string().trim().max(100).optional().nullable(),
     taperId: z.string().min(1),
     maxRpm: z.string().trim().max(50).optional().nullable(),
   }),
@@ -15,7 +16,8 @@ export const updateSpindleSchema = z.object({
   body: z.object({
     serialNumber: z.string().trim().min(1).max(100).optional(),
     make: z.string().trim().min(1).max(100).optional(),
-    type: z.string().trim().min(1).max(100).optional(),
+    type: z.enum(["BELT_DRIVEN", "DIRECT_DRIVEN", "GEAR_DRIVEN", "INTEGRATED"]).optional(),
+    machine: z.string().trim().max(100).optional().nullable(),
     taperId: z.string().min(1).optional(),
     maxRpm: z.string().trim().max(50).nullable().optional(),
   }),

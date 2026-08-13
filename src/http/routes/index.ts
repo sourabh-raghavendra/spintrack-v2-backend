@@ -14,6 +14,8 @@ import reportFieldRouter from "./reportField.routes";
 import reportPersonnelRouter from "./reportPersonnel.routes";
 import noteRouter from "./note.routes";
 import mediaRouter from "./media.routes";
+import analyticsRouter from "./analytics.routes";
+import warrantyRouter from "./warranty.routes";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { requirePermission } from "../middleware/permission.middleware";
 import { reportFieldAdapter } from "../../di/container";
@@ -33,6 +35,8 @@ router.use("/orders", reportFieldRouter);
 router.use("/orders", reportPersonnelRouter);
 router.use("/orders", noteRouter);
 router.use("/orders", mediaRouter);
+router.use("/orders", warrantyRouter);
+router.use("/analytics", analyticsRouter);
 router.use("/customer-contacts", customerContactRouter);
 router.use("/portal", portalRouter);
 

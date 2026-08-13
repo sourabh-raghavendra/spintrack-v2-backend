@@ -16,6 +16,7 @@ model Order {
 
   orderType  OrderType
   orderStage OrderStage @default(RECEIVED)
+  isUnderWarranty Boolean @default(false)
 
   spindleReceivedDate DateTime?
 
@@ -40,22 +41,22 @@ model Order {
   // Report tables — one relation per report/table (bearings and
   // testing_balancing_trials are multi-row per order, no @unique on
   // their side; the rest are 1:1 with the order)
-  incomingAlert          IncomingAlert?
-  checksheet             Checksheet?
-  damageReport           DamageReport?
-  electricalTest         ElectricalTest?
-  drawbarDetails         DrawbarDetails?
-  finalInspection        FinalInspection?
-  remarksForCustomer     RemarksForCustomer?
-  orderClosure           OrderClosure?
-  bearings               Bearing[]
-  inspectionMeasurements InspectionMeasurement[]
-  testingBalancing       TestingBalancing?
-  testingBalancingTrials TestingBalancingTrial[]
-  deviations             Deviations?
-  reportPersonnel        ReportPersonnel[]
-  notes                  Note[]
-  media                  Media[]
+  incomingAlert              IncomingAlert?
+  checksheet                 Checksheet?
+  damageReport               DamageReport?
+  electricalTestMeasurements ElectricalTestMeasurement[]
+  drawbarDetails             DrawbarDetails?
+  finalInspection            FinalInspection?
+  remarksForCustomer         RemarksForCustomer?
+  orderClosure               OrderClosure?
+  bearings                   Bearing[]
+  inspectionMeasurements     InspectionMeasurement[]
+  testingBalancing           TestingBalancing?
+  testingBalancingTrials     TestingBalancingTrial[]
+  deviations                 Deviations?
+  reportPersonnel            ReportPersonnel[]
+  notes                      Note[]
+  media                      Media[]
 
   @@map("orders")
 }

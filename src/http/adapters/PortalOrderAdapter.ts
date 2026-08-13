@@ -4,6 +4,7 @@ import { PortalOrderController } from "../../domain/portal/PortalOrderController
 import { success } from "../../utils/response";
 import { ValidationError } from "../../errors/HttpError";
 import { z } from "zod";
+import { buildFinalInspectionDoc, renderFinalInspectionPdf } from "../../domain/finalInspectionPdf/buildFinalInspectionDoc";
 
 const paramsSchema = z.object({
   id: z.string().min(1),
@@ -59,6 +60,28 @@ export class PortalOrderAdapter {
       const customerId = req.customerAuth!.customerId;
       const result = await this.controller.getOrderRemarks(parsed.data.id, customerId);
       res.status(200).json(success(result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getFinalInspectionPdf = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const parsed = paramsSchema.safeParse(req.params);
+      if (!parsed.success) {
+        return next(new ValidationError(parsed.error.issues[0].message));
+      }
+      const customerId = req.customerAuth!.customerId;
+      const data = await this.controller.getFinalInspectionPdf(parsed.data.id, customerId);
+      const docDef = buildFinalInspectionDoc(data);
+      const pdfBuffer = await renderFinalInspectionPdf(docDef);
+
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `inline; filename="final-inspection-${data.jobNumber || parsed.data.id}.pdf"`
+      );
+      res.status(200).send(pdfBuffer);
     } catch (error) {
       next(error);
     }

@@ -1,45 +1,107 @@
 interface ReportTableConfig {
-  prismaModel: string;       // Accessor on prisma client, e.g. "checksheet"
+  prismaModel: string; // Accessor on prisma client, e.g. "checksheet"
   recordKeyFields: string[]; // key columns beyond orderId identifying a single row
-  allowedFields: string[];   // whitelisted columns for writes
-  multiRow: boolean;         // true for bearings and inspection measurements
+  allowedFields: string[]; // whitelisted columns for writes
+  multiRow: boolean; // true for bearings and inspection measurements
 }
 
 export const REPORT_TABLE_CONFIG: Record<string, ReportTableConfig> = {
   incoming_alert: {
     prismaModel: "incomingAlert",
     recordKeyFields: [],
-    allowedFields: ["spindleIssue"],
+    allowedFields: [
+      "spindleIssue",
+      "firstTimeCustomer",
+      "customerPaymentPending",
+      "dispatchWithoutClearance",
+      "dispatchWithoutClearanceReason",
+      "salesApproval",
+      "financeApproval",
+    ],
     multiRow: false,
   },
   checksheet: {
     prismaModel: "checksheet",
     recordKeyFields: [],
-    allowedFields: ["spindleCondition"],
+    allowedFields: [
+      "box",
+      "toolHolder",
+      "cylinder",
+      "proxySwitch",
+      "tenon",
+      "pulley",
+      "drawbar",
+      "speedSensor",
+      "spindleCondition",
+    ],
     multiRow: false,
   },
   damage_report: {
     prismaModel: "damageReport",
     recordKeyFields: [],
-    allowedFields: ["bearingDamage"],
+    allowedFields: [
+      "bearingDamage",
+      "shaftTaper",
+      "shaftOdDamage",
+      "mechanicalSeal",
+      "pulleyDamage",
+      "encoderDamage",
+      "rotaryUnion",
+      "spacerDistanceSleeve",
+      "tenonDamage",
+      "oRings",
+      "drawbarColletes",
+      "springDamage",
+      "sensorsDamage",
+    ],
     multiRow: false,
   },
   electrical_test: {
-    prismaModel: "electricalTest",
-    recordKeyFields: [],
-    allowedFields: ["remark"],
-    multiRow: false,
+    prismaModel: "electricalTestMeasurement",
+    recordKeyFields: ["testKey"],
+    allowedFields: ["specValue", "beforeRework", "afterRework"],
+    multiRow: true,
   },
   drawbar_details: {
     prismaModel: "drawbarDetails",
     recordKeyFields: [],
-    allowedFields: ["arrangement"],
+    allowedFields: [
+      "arrangement",
+      "drawBarArrangementOd",
+      "drawBarArrangementId",
+      "drawBarArrangementThickness",
+      "drawBarArrangementHeight",
+      "drawBarArrangementQuantity",
+      "drawBarArrangementLength",
+      "beforeDismantlingClampingForce",
+    ],
     multiRow: false,
   },
   final_inspection: {
     prismaModel: "finalInspection",
     recordKeyFields: [],
-    allowedFields: ["blueMatching"],
+    allowedFields: [
+      "afterGrindingROofShaft",
+      "goNoGo",
+      "blueMatching",
+      "spacerSizeOfNNBearing",
+      "housingDepth",
+      "bearingStackLength",
+      "preloadOfCover",
+      "boreRO",
+      "frontBearingTool",
+      "rearSideRO",
+      "faceROHSK",
+      "mandrelRO300WithStud",
+      "mandrelRO300WithDrawbar",
+      "clampingForceFinal",
+      "axialPlay",
+      "radialPlay",
+      "axialFloat",
+      "rearBearingTolerance",
+      "totalShaftHeightAfterRework",
+      "taperOdRunout",
+    ],
     multiRow: false,
   },
   remarks_for_customer: {
@@ -51,7 +113,15 @@ export const REPORT_TABLE_CONFIG: Record<string, ReportTableConfig> = {
   order_closure: {
     prismaModel: "orderClosure",
     recordKeyFields: [],
-    allowedFields: ["closureDate"],
+    allowedFields: [
+      "closureDate",
+      "warrantyValidTill",
+      "packId",
+      "invoiceNo",
+      "invoiceDate",
+      "outstandingBalanceClosure",
+      "financeApprovalClosure",
+    ],
     multiRow: false,
   },
   testing_balancing: {

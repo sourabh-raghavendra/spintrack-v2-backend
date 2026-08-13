@@ -67,6 +67,7 @@ export class OrderService {
       customerId: string;
       spindleId: string;
       customerContactId?: string | null;
+      isUnderWarranty?: boolean;
     },
     requestingUser: RequestUser,
   ): Promise<Order> {
@@ -135,6 +136,7 @@ export class OrderService {
       customerId: string;
       spindleId: string;
       customerContactId: string | null;
+      isUnderWarranty: boolean;
     }>,
     requestingUser: RequestUser,
   ): Promise<Order> {
