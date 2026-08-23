@@ -88,6 +88,15 @@ export class OrderReportLogService {
       }
     }
 
+    if (reportName === "deviations") {
+      const inProcessLog = await this.repository.findOne(orderId, "in_process_inspection");
+      if (!inProcessLog || inProcessLog.status !== "COMPLETED") {
+        throw new ValidationError(
+          "In-Process Inspection report must be marked completed before the Deviations report can be completed"
+        );
+      }
+    }
+
     const log = await this.repository.findOne(orderId, reportName);
     if (!log || log.status !== "ONGOING") {
       throw new ValidationError(`"${reportName}" must be initiated before it can be closed`);

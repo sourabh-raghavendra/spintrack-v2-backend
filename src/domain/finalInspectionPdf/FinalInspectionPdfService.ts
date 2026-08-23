@@ -64,6 +64,15 @@ export class FinalInspectionPdfService {
       spindleModel: order.spindle.make,
       serialNumber: order.spindle.serialNumber,
       jobNumber: order.jo || "—",
+      soNumber: order.so || "—",
+      rmaNumber: order.rma || "—",
+      receivedDate: order.spindleReceivedDate
+        ? new Date(order.spindleReceivedDate).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
+        : "—",
       taperTypeLabel: taperTypeLabel || "—",
       matchedFields,
       trials,

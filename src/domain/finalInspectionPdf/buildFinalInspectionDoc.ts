@@ -32,6 +32,9 @@ export function buildFinalInspectionDoc(data: {
   spindleModel: string;
   serialNumber: string;
   jobNumber: string;
+  soNumber: string;
+  rmaNumber: string;
+  receivedDate: string;
   taperTypeLabel: string;
   matchedFields: any[];
   trials: any[];
@@ -169,6 +172,18 @@ export function buildFinalInspectionDoc(data: {
               { text: data.jobNumber, style: "valueCell" },
               { text: "Taper Type:", style: "labelCell" },
               { text: data.taperTypeLabel, style: "valueCell" },
+            ],
+            [
+              { text: "SO No.:", style: "labelCell" },
+              { text: data.soNumber, style: "valueCell" },
+              { text: "RMA No.:", style: "labelCell" },
+              { text: data.rmaNumber, style: "valueCell" },
+            ],
+            [
+              { text: "Received Date:", style: "labelCell" },
+              { text: data.receivedDate, style: "valueCell", colSpan: 3 },
+              "",
+              "",
             ],
           ],
         },

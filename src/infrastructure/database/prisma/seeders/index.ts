@@ -12,9 +12,8 @@ async function main(): Promise<void> {
   await connectDb();
 
   await seedPermissions();
-  // await seedTapers();
-
-  // await seedCustomers();
+  await seedTapers();
+  await seedCustomers();
 
   await disconnectDb();
   logger.info("Seeding complete");

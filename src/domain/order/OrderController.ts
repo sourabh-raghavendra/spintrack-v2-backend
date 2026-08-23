@@ -4,6 +4,11 @@ import { CreateOrderInput, UpdateOrderInput } from "../../http/validation/order.
 import { Order } from "../../generated/prisma/client";
 import { RequestUser } from "../../types/common";
 import { generateOrderOnePagerPdf } from "../../utils/pdfGenerator";
+import { FullReportPdfService } from "../fullReportPdf/FullReportPdfService";
+import { buildFullReportDoc } from "../fullReportPdf/buildFullReportDoc";
+import { renderFinalInspectionPdf } from "../finalInspectionPdf/buildFinalInspectionDoc";
+
+const fullReportPdfService = new FullReportPdfService();
 
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
@@ -40,5 +45,11 @@ export class OrderController {
     return this.orderService.getById(id).then((order) => {
       return generateOrderOnePagerPdf(order);
     });
+  }
+
+  async getFullReportPdf(id: string): Promise<Buffer> {
+    const data = await fullReportPdfService.assembleFullReportData(id);
+    const docDef = buildFullReportDoc(data);
+    return renderFinalInspectionPdf(docDef);
   }
 }

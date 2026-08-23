@@ -56,6 +56,24 @@ export class OrderAdapter {
     }
   };
 
+  getFullReportPdf = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const parsed = orderIdParamSchema.safeParse(req.params);
+      if (!parsed.success) {
+        return next(new ValidationError(parsed.error.issues[0].message));
+      }
+      const buffer = await this.orderController.getFullReportPdf(parsed.data.id);
+      res.setHeader("Content-Type", "application/pdf");
+      res.status(200).send(buffer);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   private checkAdmin(req: Request): void {
     if (!req.user || !req.user.isAdmin) {
       throw new ForbiddenError("Admin access required");
