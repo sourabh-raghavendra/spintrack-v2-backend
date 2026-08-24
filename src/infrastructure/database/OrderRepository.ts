@@ -59,6 +59,9 @@ export class OrderRepository implements IOrderRepository {
     if (filters.customerId) {
       where.customerId = filters.customerId;
     }
+    if (filters.isUnderWarranty !== undefined) {
+      where.isUnderWarranty = filters.isUnderWarranty;
+    }
 
     if (visibleZones !== "ALL") {
       where.zone = { in: visibleZones as Zone[] };

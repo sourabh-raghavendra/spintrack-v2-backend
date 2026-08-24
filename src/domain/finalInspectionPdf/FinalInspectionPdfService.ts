@@ -66,6 +66,7 @@ export class FinalInspectionPdfService {
       jobNumber: order.jo || "—",
       soNumber: order.so || "—",
       rmaNumber: order.rma || "—",
+      quotationNumber: order.quotation || "—",
       receivedDate: order.spindleReceivedDate
         ? new Date(order.spindleReceivedDate).toLocaleDateString("en-IN", {
             day: "numeric",

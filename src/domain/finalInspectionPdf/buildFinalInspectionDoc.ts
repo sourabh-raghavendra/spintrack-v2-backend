@@ -79,8 +79,17 @@ export function buildFinalInspectionDoc(data: {
   // If there are no rows (only header), render a placeholder row
   if (finalInspectionTableBody.length === 1) {
     finalInspectionTableBody.push([
-      { text: "No final inspection measurements recorded for this taper", colSpan: 6, alignment: "center", style: "valueCell" },
-      "", "", "", "", ""
+      {
+        text: "No final inspection measurements recorded for this taper",
+        colSpan: 6,
+        alignment: "center",
+        style: "valueCell",
+      },
+      "",
+      "",
+      "",
+      "",
+      "",
     ]);
   }
 
@@ -109,18 +118,43 @@ export function buildFinalInspectionDoc(data: {
 
   if (testingAndBalancingRows.length === 1) {
     testingAndBalancingRows.push([
-      { text: "No testing & balancing trials recorded", colSpan: 7, alignment: "center", style: "valueCell" },
-      "", "", "", "", "", ""
+      {
+        text: "No testing & balancing trials recorded",
+        colSpan: 7,
+        alignment: "center",
+        style: "valueCell",
+      },
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
     ]);
   }
 
   const remarksRows = [["Sr.", "Remark"]];
   const allRemarks = [
-    "Warm up spindle for min. 60 minutes before hand-over to production.",
+    "Warm up spindle for minimum 60 minutes before hand-over to production.",
     ...data.remarksList,
   ];
   allRemarks.forEach((remark, idx) => {
-    remarksRows.push([idx + 1, remark]);
+    let cleanRemark = remark;
+    const colonIndex = remark.indexOf(": ");
+    if (colonIndex !== -1) {
+      const prefix = remark.substring(0, colonIndex);
+      if (prefix.includes(" — ")) {
+        cleanRemark = remark.substring(colonIndex + 2);
+      }
+    }
+
+    const formattedRemark =
+      cleanRemark
+        .split(/\.(?=\s|[A-Z]|$)/)
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .join(".\n") + (cleanRemark.endsWith(".") ? "." : "");
+    remarksRows.push([idx + 1, formattedRemark]);
   });
 
   return {
@@ -135,9 +169,7 @@ export function buildFinalInspectionDoc(data: {
             alignment: "left",
           },
           {
-            stack: [
-              { text: "Final Inspection Report", style: "companyTitle" },
-            ],
+            stack: [{ text: "Final Inspection Report", style: "companyTitle" }],
             alignment: "center",
           },
           {
@@ -181,9 +213,9 @@ export function buildFinalInspectionDoc(data: {
             ],
             [
               { text: "Received Date:", style: "labelCell" },
-              { text: data.receivedDate, style: "valueCell", colSpan: 3 },
-              "",
-              "",
+              { text: data.receivedDate, style: "valueCell" },
+              { text: "Quotation No.:", style: "labelCell" },
+              { text: (data as any).quotationNumber || "—", style: "valueCell" },
             ],
           ],
         },
@@ -253,7 +285,7 @@ export function buildFinalInspectionDoc(data: {
                 alignment: "center",
               },
               {
-                text: "ISR Manager",
+                text: "Manager",
                 style: "valueCell",
                 alignment: "center",
               },
@@ -287,7 +319,9 @@ const fonts = {
   },
 };
 
-export async function renderFinalInspectionPdf(docDefinition: TDocumentDefinitions): Promise<Buffer> {
+export async function renderFinalInspectionPdf(
+  docDefinition: TDocumentDefinitions,
+): Promise<Buffer> {
   const urlResolver = new URLResolver(virtualFs);
   const printer = new PdfPrinter(fonts, virtualFs, urlResolver);
   const doc = await printer.createPdfKitDocument({

@@ -42,6 +42,7 @@ export class SpindleService {
     make: string;
     type: string;
     taperId: string;
+    machine?: string | null;
     maxRpm?: string | null;
     createdById: string;
   }): Promise<Spindle> {

@@ -18,6 +18,7 @@ export interface OrderListFilters {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
   customerId?: string;
+  isUnderWarranty?: boolean;
 }
 
 export interface IOrderRepository {

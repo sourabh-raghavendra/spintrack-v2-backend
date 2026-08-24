@@ -4,6 +4,7 @@ import { Spindle } from "../../generated/prisma/client";
 export type SpindleWithTaper = Spindle & {
   taper: { id: string; taperType: string };
   createdBy: { id: string; name: string; employeeCode: string };
+  orders: { jo: string }[];
 };
 
 export interface SpindleListFilters {
@@ -25,6 +26,7 @@ export interface ISpindleRepository {
     make: string;
     type: string;
     taperId: string;
+    machine?: string | null;
     maxRpm?: string | null;
     createdById: string;
   }): Promise<Spindle>;
@@ -35,6 +37,7 @@ export interface ISpindleRepository {
       make: string;
       type: string;
       taperId: string;
+      machine: string | null;
       maxRpm: string | null;
     }>,
   ): Promise<Spindle>;

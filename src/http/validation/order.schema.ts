@@ -41,7 +41,10 @@ export const orderListFiltersSchema = z.object({
     pageSize: z.coerce.number().int().min(1).max(100).default(20),
     sortBy: z.string().trim().optional(),
     sortOrder: z.enum(["asc", "desc"]).optional(),
-    customerId: z.string().min(1).optional(),
+    isUnderWarranty: z.preprocess(
+      (val) => (val === "true" || val === "1" ? true : val === "false" || val === "0" ? false : undefined),
+      z.boolean().optional()
+    ),
   }),
 });
 

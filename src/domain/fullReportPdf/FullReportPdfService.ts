@@ -165,11 +165,18 @@ export class FullReportPdfService {
       }
     }
 
+    const notes = await prisma.note.findMany({
+      where: { orderId },
+      include: { createdBy: { select: { name: true } } },
+      orderBy: { createdAt: "asc" },
+    });
+
     return {
       orderMeta: {
         jo: order.jo,
         rma: order.rma,
         so: order.so,
+        quotation: order.quotation,
         customerName: order.customer.customerName,
         spindleMake: order.spindle.make,
         spindleSerial: order.spindle.serialNumber,
@@ -177,6 +184,13 @@ export class FullReportPdfService {
       },
       sections,
       personnelSections,
+      notes: notes.map((n) => ({
+        reportName: n.reportName,
+        reportTitle: REPORT_DISPLAY_TITLES[n.reportName] ?? n.reportName,
+        content: n.content,
+        author: n.createdBy.name,
+        createdAt: n.createdAt.toLocaleDateString("en-GB") + " " + n.createdAt.toLocaleTimeString("en-GB", { hour: "numeric", minute: "2-digit" }),
+      })),
     };
   }
 }

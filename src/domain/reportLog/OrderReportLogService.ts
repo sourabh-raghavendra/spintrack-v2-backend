@@ -5,6 +5,7 @@ import { REPORTS } from "../permission/permissions";
 import { ConflictError, ValidationError } from "../../errors/HttpError";
 import logger from "../../observability/logger";
 import { OrderReportLog } from "../../generated/prisma/client";
+import prisma from "../../config/database";
 
 export class OrderReportLogService {
   constructor(
@@ -16,7 +17,7 @@ export class OrderReportLogService {
   async getTimelineForOrder(orderId: string): Promise<any[]> {
     const existingLogs = await this.repository.findAllForOrder(orderId);
     const logMap = new Map<string, OrderReportLog>();
-    
+
     for (const log of existingLogs) {
       logMap.set(log.reportName, log);
     }
@@ -39,7 +40,11 @@ export class OrderReportLogService {
     });
   }
 
-  async initiateReport(orderId: string, reportName: string, userId: string): Promise<OrderReportLog> {
+  async initiateReport(
+    orderId: string,
+    reportName: string,
+    userId: string,
+  ): Promise<OrderReportLog> {
     let result: OrderReportLog;
     try {
       result = await this.repository.create({
@@ -51,7 +56,9 @@ export class OrderReportLogService {
       });
     } catch (error: any) {
       if (error.code === "P2002") {
-        throw new ConflictError(`"${reportName}" has already been initiated for this order`);
+        throw new ConflictError(
+          `"${reportName}" has already been initiated for this order`,
+        );
       }
       throw error;
     }
@@ -60,10 +67,7 @@ export class OrderReportLogService {
     try {
       await this.runCreationHook(orderId, reportName);
     } catch (err: any) {
-      logger.error(
-        { err, orderId, reportName },
-        "Report creation hook failed"
-      );
+      logger.error({ err, orderId, reportName }, "Report creation hook failed");
     }
 
     if (reportName === "incoming_alert") {
@@ -72,7 +76,7 @@ export class OrderReportLogService {
       } catch (err: any) {
         logger.error(
           { orderId, error: err.message, stack: err.stack },
-          "Failed to sync order stage to ONGOING from incoming_alert hook"
+          "Failed to sync order stage to ONGOING from incoming_alert hook",
         );
       }
     }
@@ -80,26 +84,54 @@ export class OrderReportLogService {
     return result;
   }
 
-  async closeReport(orderId: string, reportName: string, userId: string): Promise<OrderReportLog> {
+  async closeReport(
+    orderId: string,
+    reportName: string,
+    userId: string,
+  ): Promise<OrderReportLog> {
     if (reportName === "order_closure") {
       const order = await this.orderService.getById(orderId);
       if (order.orderStage !== "ONGOING") {
-        throw new ValidationError("Order must be ongoing before it can be closed");
-      }
-    }
-
-    if (reportName === "deviations") {
-      const inProcessLog = await this.repository.findOne(orderId, "in_process_inspection");
-      if (!inProcessLog || inProcessLog.status !== "COMPLETED") {
         throw new ValidationError(
-          "In-Process Inspection report must be marked completed before the Deviations report can be completed"
+          "Order must be ongoing before it can be closed",
         );
       }
     }
 
+    if (reportName === "deviations") {
+      const inProcessLog = await this.repository.findOne(
+        orderId,
+        "in_process_inspection",
+      );
+      if (!inProcessLog || inProcessLog.status !== "COMPLETED") {
+        throw new ValidationError(
+          "In-Process Inspection report must be marked completed before the Deviations report can be completed",
+        );
+      }
+
+      // Auto-approve all remaining pending deviations for this order
+      await prisma.inspectionMeasurement.updateMany({
+        where: {
+          orderId,
+          AND: [
+            { OR: [{ remark: false }, { remarkAfterRework: false }] },
+            { OR: [{ deviationApproved: null }, { deviationApproved: false }] },
+          ],
+        },
+        data: {
+          deviationApproved: true,
+          decidedById: userId,
+          decidedAt: new Date(),
+          deviationRemark: null,
+        },
+      });
+    }
+
     const log = await this.repository.findOne(orderId, reportName);
     if (!log || log.status !== "ONGOING") {
-      throw new ValidationError(`"${reportName}" must be initiated before it can be closed`);
+      throw new ValidationError(
+        `"${reportName}" must be initiated before it can be closed`,
+      );
     }
 
     const result = await this.repository.markClosed(orderId, reportName, {
@@ -113,7 +145,7 @@ export class OrderReportLogService {
       } catch (err: any) {
         logger.error(
           { orderId, error: err.message, stack: err.stack },
-          "Failed to sync order stage to COMPLETED from order_closure hook"
+          "Failed to sync order stage to COMPLETED from order_closure hook",
         );
       }
     }
@@ -121,7 +153,10 @@ export class OrderReportLogService {
     return result;
   }
 
-  private async runCreationHook(orderId: string, reportName: string): Promise<void> {
+  private async runCreationHook(
+    orderId: string,
+    reportName: string,
+  ): Promise<void> {
     switch (reportName) {
       case "incoming_alert":
         await this.reportRecordRepository.createBlankIncomingAlert(orderId);
@@ -151,7 +186,9 @@ export class OrderReportLogService {
         await this.reportRecordRepository.createBlankTestingBalancing(orderId);
         break;
       case "remarks_for_customer":
-        await this.reportRecordRepository.createBlankRemarksForCustomer(orderId);
+        await this.reportRecordRepository.createBlankRemarksForCustomer(
+          orderId,
+        );
         break;
       case "order_closure":
         await this.reportRecordRepository.createBlankOrderClosure(orderId);

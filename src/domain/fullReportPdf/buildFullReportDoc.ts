@@ -9,7 +9,7 @@ export function buildFullReportDoc(data: AssembledData): TDocumentDefinitions {
     { text: "Full Report Summary", fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
     {
       columns: [
-        { text: `JO: ${data.orderMeta.jo || "—"}   RMA: ${data.orderMeta.rma || "—"}   SO: ${data.orderMeta.so || "—"}` },
+        { text: `JO: ${data.orderMeta.jo || "—"}   RMA: ${data.orderMeta.rma || "—"}   SO: ${data.orderMeta.so || "—"}   Quotation: ${data.orderMeta.quotation || "—"}` },
         { text: `Customer: ${data.orderMeta.customerName}`, alignment: "right" },
       ],
       margin: [0, 0, 0, 4],
@@ -118,6 +118,27 @@ export function buildFullReportDoc(data: AssembledData): TDocumentDefinitions {
       content.push({
         ul: p.rows.map((r) => `${r.role}: ${r.name}`),
         fontSize: 10,
+      });
+    }
+  }
+
+  if (data.notes && data.notes.length > 0) {
+    content.push({ text: "Internal Notes", fontSize: 15, bold: true, margin: [0, 20, 0, 8], pageBreak: "before" });
+
+    const groupedNotes: Record<string, typeof data.notes> = {};
+    for (const note of data.notes) {
+      if (!groupedNotes[note.reportTitle]) {
+        groupedNotes[note.reportTitle] = [];
+      }
+      groupedNotes[note.reportTitle].push(note);
+    }
+
+    for (const [reportTitle, noteList] of Object.entries(groupedNotes)) {
+      content.push({ text: reportTitle, fontSize: 11, bold: true, margin: [0, 8, 0, 4] });
+      content.push({
+        ul: noteList.map((n) => `${n.author} (${n.createdAt}): ${n.content}`),
+        fontSize: 10,
+        margin: [10, 0, 0, 10],
       });
     }
   }

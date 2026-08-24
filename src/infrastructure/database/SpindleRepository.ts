@@ -17,6 +17,15 @@ const spindleIncludes = {
       employeeCode: true,
     },
   },
+  orders: {
+    select: {
+      jo: true,
+    },
+    orderBy: {
+      createdAt: "desc" as const,
+    },
+    take: 1,
+  },
 };
 
 export class SpindleRepository implements ISpindleRepository {
@@ -72,6 +81,7 @@ export class SpindleRepository implements ISpindleRepository {
     make: string;
     type: string;
     taperId: string;
+    machine?: string | null;
     maxRpm?: string | null;
     createdById: string;
   }): Promise<Spindle> {
@@ -81,6 +91,7 @@ export class SpindleRepository implements ISpindleRepository {
         make: data.make,
         type: data.type,
         taperId: data.taperId,
+        machine: data.machine ?? null,
         maxRpm: data.maxRpm ?? null,
         createdById: data.createdById,
       },

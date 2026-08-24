@@ -87,7 +87,7 @@ const FinalInspectionPdfTemplate = () => {
   const remarksRows = [["Sr.", "Remark"]];
 
   const allRemarks = [
-    "Warm up spindle for min. 60 minutes before hand-over to production.",
+    "Warm up spindle for minimum 60 minutes before hand-over to production.",
     ...(Array.isArray(remarksForCustomer) ? remarksForCustomer : []),
   ];
   allRemarks.forEach((remark, idx) => {
@@ -214,7 +214,7 @@ const FinalInspectionPdfTemplate = () => {
                 alignment: "center",
               },
               {
-                text: "ISR Manager",
+                text: "Manager",
                 style: "valueCell",
                 alignment: "center",
               },
