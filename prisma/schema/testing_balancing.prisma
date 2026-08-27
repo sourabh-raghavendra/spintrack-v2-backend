@@ -4,9 +4,12 @@
 // kept for now).
 
 model TestingBalancing {
-  id      String  @id @default(cuid())
-  orderId String  @unique
-  stabilizedTemperature String? // placeholder — remaining header fields added later, additively
+  id                     String  @id @default(cuid())
+  orderId                String  @unique
+  stabilizedTemperature  String?
+  residualImbalanceFront String?
+  residualImbalanceRear  String?
+  remark                 String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

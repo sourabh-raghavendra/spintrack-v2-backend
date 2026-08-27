@@ -94,6 +94,8 @@ export const REPORT_TABLE_CONFIG: Record<string, ReportTableConfig> = {
       "faceROHSK",
       "mandrelRO300WithStud",
       "mandrelRO300WithDrawbar",
+      "mandrelRO150WithStud",
+      "mandrelRO150WithDrawbar",
       "clampingForceFinal",
       "axialPlay",
       "radialPlay",
@@ -127,7 +129,12 @@ export const REPORT_TABLE_CONFIG: Record<string, ReportTableConfig> = {
   testing_balancing: {
     prismaModel: "testingBalancing",
     recordKeyFields: [],
-    allowedFields: ["stabilizedTemperature"],
+    allowedFields: [
+      "stabilizedTemperature",
+      "residualImbalanceFront",
+      "residualImbalanceRear",
+      "remark",
+    ],
     multiRow: false,
   },
 

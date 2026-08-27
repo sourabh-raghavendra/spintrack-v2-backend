@@ -60,6 +60,8 @@ export const REPORT_FIELD_LABELS: Record<string, Record<string, string>> = {
     faceROHSK: "Face R/O (mm)",
     mandrelRO300WithStud: "Mandrel R/O at 300mm with Stud (mm)",
     mandrelRO300WithDrawbar: "Mandrel R/O at 300mm (Drawbar) (mm)",
+    mandrelRO150WithStud: "Mandrel R/O at 150mm with Stud (mm)",
+    mandrelRO150WithDrawbar: "Mandrel R/O at 150mm (Drawbar) (mm)",
     clampingForceFinal: "Clamping force (kg-f / Nm)",
     axialPlay: "Axial Play (mm)",
     radialPlay: "Radial Play (mm)",

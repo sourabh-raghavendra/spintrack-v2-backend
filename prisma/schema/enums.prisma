@@ -37,9 +37,9 @@ enum Department {
 enum OrderType {
   REPAIR_ISR
   REPAIR_SSR
-  MANUFACTURING
+  MANUFACTURING_SIM
+  MANUFACTURING_STM
 }
-
 // ── OrderStage ────────────────────────────────────────────────────────
 // Calculated internally — see OrderService. ARCHIVED is the soft-delete
 // mechanism; there is no CANCELLED value and no separate deletedAt.

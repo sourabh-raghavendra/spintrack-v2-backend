@@ -62,6 +62,16 @@ export class TaperService {
         unit: "mm",
       },
       {
+        specKey: "mandrelRO150WithStud",
+        label: "Mandrel R/O @ 150mm (with stud) (mm)",
+        unit: "mm",
+      },
+      {
+        specKey: "mandrelRO150WithDrawbar",
+        label: "Mandrel R/O @ 150mm (with drawbar) (mm)",
+        unit: "mm",
+      },
+      {
         specKey: "clampingForceFinal",
         label: "Clamping Force (kg-f)",
         unit: "kg-f",
