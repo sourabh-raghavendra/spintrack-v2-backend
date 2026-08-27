@@ -57,6 +57,7 @@ model Order {
   reportPersonnel            ReportPersonnel[]
   notes                      Note[]
   media                      Media[]
+  scopeOfWorkEntries         OrderScopeOfWork[]
 
   @@map("orders")
 }

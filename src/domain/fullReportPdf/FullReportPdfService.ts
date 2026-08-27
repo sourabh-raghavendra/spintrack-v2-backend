@@ -33,7 +33,6 @@ export class FullReportPdfService {
       "incoming_alert",
       "checksheet",
       "damage_report",
-      "drawbar_details",
       "final_inspection",
       "testing_balancing",
       "order_closure",
@@ -53,6 +52,29 @@ export class FullReportPdfService {
         rows: [rows],
       });
     }
+
+    // Process drawbar_details as tabular before/after comparison
+    const drawbarRecord = await reportFieldService.readReport(orderId, "drawbar_details");
+    const drawbarRows = [
+      { label: "Arrangement", before: "drawBarArrangement", after: "drawBarArrangementAfterAssembly" },
+      { label: "OD", before: "drawBarArrangementOd", after: "drawBarArrangementOdAfterAssembly" },
+      { label: "ID", before: "drawBarArrangementId", after: "drawBarArrangementIdAfterAssembly" },
+      { label: "Thickness", before: "drawBarArrangementThickness", after: "drawBarArrangementThicknessAfterAssembly" },
+      { label: "Height", before: "drawBarArrangementHeight", after: "drawBarArrangementHeightAfterAssembly" },
+      { label: "Total quantity", before: "drawBarArrangementQuantity", after: "drawBarArrangementQuantityAfterAssembly" },
+      { label: "Total length", before: "drawBarArrangementLength", after: "drawBarArrangementLengthAfterAssembly" },
+      { label: "Clamping Force (kg-f)", before: "clampingForceBeforeAssembly", after: "clampingForceAfterAssembly" },
+    ].map((field) => [
+      { key: "field", label: "Field", value: field.label },
+      { key: field.before, label: "Before Assembly", value: formatValue(drawbarRecord?.[field.before]) },
+      { key: field.after, label: "After Assembly", value: formatValue(drawbarRecord?.[field.after]) },
+    ]);
+    sections.push({
+      reportName: "drawbar_details",
+      title: REPORT_DISPLAY_TITLES["drawbar_details"] ?? "Drawbar Details",
+      kind: "multiRow",
+      rows: drawbarRows,
+    });
 
     for (const reportName of ["old_bearing_report", "new_bearing_report"]) {
       const records = await reportFieldService.readReport(orderId, reportName);

@@ -67,9 +67,16 @@ export class WarrantyCertificateService {
     const data = await this.assembleCertificateData(orderId);
     if (!data) return null;
 
-    const diffInMs =
-      new Date(data.validUntil.split("/").reverse().join("-")).getTime() -
-      new Date(data.closureDate!).getTime();
+    const closure = await prisma.orderClosure.findUnique({
+      where: { orderId },
+    });
+    if (!closure?.warrantyValidTill) {
+      return null;
+    }
+
+    const diffInMs = closure.closureDate
+      ? closure.warrantyValidTill.getTime() - closure.closureDate.getTime()
+      : 0;
     const diffInMonths = diffInMs / (1000 * 60 * 60 * 24 * 30.44);
 
     const docDefinition =

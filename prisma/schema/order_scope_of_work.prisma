@@ -1,0 +1,14 @@
+model OrderScopeOfWork {
+  id          String   @id @default(cuid())
+  orderId     String
+  statementId String
+  addedById   String
+  createdAt   DateTime @default(now())
+
+  order     Order                @relation(fields: [orderId], references: [id])
+  statement ScopeOfWorkStatement @relation(fields: [statementId], references: [id])
+  addedBy   User                 @relation(fields: [addedById], references: [id])
+
+  @@unique([orderId, statementId])
+  @@map("order_scope_of_work")
+}

@@ -1,14 +1,23 @@
 model DrawbarDetails {
   id                             String  @id @default(cuid())
   orderId                        String  @unique
-  arrangement                    String?
-  drawBarArrangementOd           String?
-  drawBarArrangementId           String?
-  drawBarArrangementThickness    String?
-  drawBarArrangementHeight       String?
-  drawBarArrangementQuantity     String?
-  drawBarArrangementLength       String?
-  beforeDismantlingClampingForce String?
+  drawBarArrangement                String?
+  drawBarArrangementOd              String?
+  drawBarArrangementId              String?
+  drawBarArrangementThickness       String?
+  drawBarArrangementHeight          String?
+  drawBarArrangementQuantity        String?
+  drawBarArrangementLength          String?
+  clampingForceBeforeAssembly       String?
+
+  drawBarArrangementAfterAssembly           String?
+  drawBarArrangementOdAfterAssembly         String?
+  drawBarArrangementIdAfterAssembly         String?
+  drawBarArrangementThicknessAfterAssembly  String?
+  drawBarArrangementHeightAfterAssembly     String?
+  drawBarArrangementQuantityAfterAssembly   String?
+  drawBarArrangementLengthAfterAssembly     String?
+  clampingForceAfterAssembly                String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

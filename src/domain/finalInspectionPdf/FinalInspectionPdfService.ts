@@ -37,8 +37,8 @@ export class FinalInspectionPdfService {
         key: spec.specKey,
         label: spec.label,
         unit: spec.unit,
-        min: spec.min,
-        max: spec.max,
+        min: spec.min ? spec.min.toString() : "",
+        max: spec.max ? spec.max.toString() : "",
         value: finalInspection?.[spec.specKey as keyof typeof finalInspection] ?? null,
       }))
       .filter((f) => f.value !== null && f.value !== undefined && f.value !== "");

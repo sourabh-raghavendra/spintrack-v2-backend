@@ -180,6 +180,15 @@ const warrantyCertificateService = new WarrantyCertificateService();
 const warrantyController = new WarrantyController(warrantyService, warrantyCertificateService);
 const warrantyAdapter = new WarrantyAdapter(warrantyController);
 
+// ── Scope of Work ──────────────────────────────────────────────────────
+import { ScopeOfWorkService } from "../domain/scopeOfWork/ScopeOfWorkService";
+import { ScopeOfWorkController } from "../domain/scopeOfWork/ScopeOfWorkController";
+import { ScopeOfWorkAdapter } from "../http/adapters/ScopeOfWorkAdapter";
+
+const scopeOfWorkService = new ScopeOfWorkService();
+const scopeOfWorkController = new ScopeOfWorkController(scopeOfWorkService);
+const scopeOfWorkAdapter = new ScopeOfWorkAdapter(scopeOfWorkController);
+
 // ── Exports ───────────────────────────────────────────────────────────
 export {
   // Permissions
@@ -260,4 +269,7 @@ export {
 
   // Warranty
   warrantyAdapter,
+
+  // Scope of Work
+  scopeOfWorkAdapter,
 };

@@ -95,6 +95,7 @@ const REPORT_LABELS: Record<string, string> = {
   remarks_for_customer: "Remarks for Customer",
   deviations: "Deviations",
   order_closure: "Order Closure",
+  scope_of_work: "Scope of Work",
 };
 for (const report of REPORTS) {
   const key =

@@ -65,6 +65,7 @@ export function buildFullReportDoc(data: AssembledData): TDocumentDefinitions {
       const tableWidths: Record<string, any[]> = {
         old_bearing_report: [100, 150, 180, 50],
         new_bearing_report: [100, 150, 180, 50],
+        drawbar_details: [150, 175, 175],
         electrical_test: [120, 120, 120, 120],
         testing_balancing_trials: [50, 50, 50, 80, 80, 50, 50, 50],
         deviations: [150, 70, 250],
@@ -97,7 +98,7 @@ export function buildFullReportDoc(data: AssembledData): TDocumentDefinitions {
               headers.map((h) => ({ text: h, bold: true, fillColor: "#f0f0f0", fontSize: 8 })),
               ...section.rows.map((row) =>
                 row.map((cell) =>
-                  cell.key === "arrangement"
+                  cell.key === "arrangement" || cell.key === "drawBarArrangement" || cell.key === "drawBarArrangementAfterAssembly"
                     ? buildShapeCell(cell.value)
                     : { text: cell.value, fontSize: 8 }
                 )

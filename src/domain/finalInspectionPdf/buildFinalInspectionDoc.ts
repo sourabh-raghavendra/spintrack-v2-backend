@@ -56,9 +56,9 @@ export function buildFinalInspectionDoc(data: {
     if (Array.isArray(value)) {
       value.forEach((v, idx) => {
         finalInspectionTableBody.push([
-          sr++,
+          String(sr++),
           `${field.label} (${idx + 1})`,
-          v ?? "—",
+          v !== null && v !== undefined ? String(v) : "—",
           min,
           max,
           unit,
@@ -66,9 +66,9 @@ export function buildFinalInspectionDoc(data: {
       });
     } else {
       finalInspectionTableBody.push([
-        sr++,
+        String(sr++),
         field.label,
-        value ?? "—",
+        value !== null && value !== undefined ? String(value) : "—",
         min,
         max,
         unit,
@@ -105,7 +105,7 @@ export function buildFinalInspectionDoc(data: {
     ],
     ...(Array.isArray(data.trials)
       ? data.trials.map((row, idx) => [
-          idx + 1,
+          String(idx + 1),
           row.rpm || "—",
           row.vibrationFront || "—",
           row.vibrationRear || "—",

@@ -1,0 +1,10 @@
+model ScopeOfWorkStatement {
+  id          String   @id @default(cuid())
+  text        String   @unique
+  usageCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  orderLinks OrderScopeOfWork[]
+
+  @@map("scope_of_work_statements")
+}

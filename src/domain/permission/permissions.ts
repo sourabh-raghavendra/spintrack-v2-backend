@@ -39,6 +39,7 @@ export const REPORTS = [
   "remarks_for_customer",
   "deviations",
   "order_closure",
+  "scope_of_work",
 ] as const;
 
 export type ReportName = (typeof REPORTS)[number];
