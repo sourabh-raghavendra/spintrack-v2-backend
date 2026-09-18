@@ -27,13 +27,16 @@ export class ReportRecordRepository implements IReportRecordRepository {
       "FRONT_2",
       "REAR_1",
       "REAR_2",
-      "MECHANICAL_SEAL",
+      "SEAL",
+      "O_RING",
     ];
     return prisma.bearing.createMany({
       data: positions.map((position) => ({
         orderId,
         isNew,
         position,
+        seals: position === "SEAL" ? [] : undefined,
+        oRings: position === "O_RING" ? [] : undefined,
       })),
       skipDuplicates: true,
     });

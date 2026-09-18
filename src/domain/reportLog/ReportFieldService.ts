@@ -230,9 +230,9 @@ export class ReportFieldService {
   // ── Helpers ───────────────────────────────────────────────────────────────
   private buildBaseWhere(orderId: string, reportName: string): any {
     const where: any = { orderId };
-    if (reportName === "old_bearing_report") {
+    if (reportName === "old_material_report") {
       where.isNew = false;
-    } else if (reportName === "new_bearing_report") {
+    } else if (reportName === "new_material_report") {
       where.isNew = true;
     }
     return where;
@@ -266,7 +266,7 @@ export class ReportFieldService {
     }
 
     if (config.prismaModel === "bearing") {
-      const isNew = reportName === "new_bearing_report";
+      const isNew = reportName === "new_material_report";
       return {
         orderId_isNew_position: {
           orderId,
@@ -325,7 +325,7 @@ export class ReportFieldService {
     }
 
     if (config.prismaModel === "bearing") {
-      data.isNew = reportName === "new_bearing_report";
+      data.isNew = reportName === "new_material_report";
     }
 
     return data;

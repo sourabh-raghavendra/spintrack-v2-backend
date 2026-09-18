@@ -23,8 +23,10 @@ model InspectionMeasurement {
   permissibleValues Json?
   actualValue       Json?
   remark            Boolean?
+  commentBeforeRework String?
   valueAfterRework  Json?
   remarkAfterRework Boolean?
+  commentAfterRework  String?
 
   deviationApproved Boolean?
   decidedById       String?

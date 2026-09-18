@@ -14,6 +14,7 @@ export const createOrderSchema = z.object({
     spindleId: z.string().min(1, "Spindle ID is required"),
     customerContactId: z.string().min(1).nullable().optional(),
     isUnderWarranty: z.boolean().default(false),
+    previousJo: z.string().trim().min(1).max(50).nullable().optional(),
   }),
 });
 
@@ -28,6 +29,7 @@ export const updateOrderSchema = z.object({
     spindleId: z.string().min(1).optional(),
     customerContactId: z.string().min(1).nullable().optional(),
     isUnderWarranty: z.boolean().optional(),
+    previousJo: z.string().trim().min(1).max(50).nullable().optional(),
   }),
 });
 

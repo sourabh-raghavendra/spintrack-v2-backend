@@ -167,10 +167,10 @@ export class OrderReportLogService {
       case "damage_report":
         await this.reportRecordRepository.createBlankDamageReport(orderId);
         break;
-      case "old_bearing_report":
+      case "old_material_report":
         await this.reportRecordRepository.createBlankBearings(orderId, false);
         break;
-      case "new_bearing_report":
+      case "new_material_report":
         await this.reportRecordRepository.createBlankBearings(orderId, true);
         break;
       case "electrical_test":

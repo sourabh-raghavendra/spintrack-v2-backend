@@ -17,6 +17,7 @@ model Order {
   orderType  OrderType
   orderStage OrderStage @default(RECEIVED)
   isUnderWarranty Boolean @default(false)
+  previousJo      String?
 
   spindleReceivedDate DateTime?
 

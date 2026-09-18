@@ -73,6 +73,7 @@ export const REPORT_TABLE_CONFIG: Record<string, ReportTableConfig> = {
       "drawBarArrangementQuantity",
       "drawBarArrangementLength",
       "clampingForceBeforeAssembly",
+      "colleteDetails",
       "drawBarArrangementAfterAssembly",
       "drawBarArrangementOdAfterAssembly",
       "drawBarArrangementIdAfterAssembly",
@@ -81,6 +82,7 @@ export const REPORT_TABLE_CONFIG: Record<string, ReportTableConfig> = {
       "drawBarArrangementQuantityAfterAssembly",
       "drawBarArrangementLengthAfterAssembly",
       "clampingForceAfterAssembly",
+      "colleteDetailsAfterAssembly",
     ],
     multiRow: false,
   },
@@ -146,16 +148,16 @@ export const REPORT_TABLE_CONFIG: Record<string, ReportTableConfig> = {
     multiRow: false,
   },
 
-  old_bearing_report: {
+  old_material_report: {
     prismaModel: "bearing",
     recordKeyFields: ["position"],
-    allowedFields: ["arrangement", "details", "quantity"],
+    allowedFields: ["arrangement", "details", "quantity", "seals", "oRings"],
     multiRow: true,
   },
-  new_bearing_report: {
+  new_material_report: {
     prismaModel: "bearing",
     recordKeyFields: ["position"],
-    allowedFields: ["arrangement", "details", "quantity"],
+    allowedFields: ["arrangement", "details", "quantity", "seals", "oRings"],
     multiRow: true,
   },
   in_process_inspection: {
@@ -166,8 +168,10 @@ export const REPORT_TABLE_CONFIG: Record<string, ReportTableConfig> = {
       "permissibleValues",
       "actualValue",
       "remark",
+      "commentBeforeRework",
       "valueAfterRework",
       "remarkAfterRework",
+      "commentAfterRework",
     ],
     multiRow: true,
   },

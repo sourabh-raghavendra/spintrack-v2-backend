@@ -76,19 +76,79 @@ export class FullReportPdfService {
       rows: drawbarRows,
     });
 
-    for (const reportName of ["old_bearing_report", "new_bearing_report"]) {
-      const records = await reportFieldService.readReport(orderId, reportName);
-      const rows = (records ?? []).map((r: any) => [
-        { key: "position", label: "Position", value: formatValue(r.position) },
-        { key: "arrangement", label: "Arrangement", value: formatValue(r.arrangement) },
-        { key: "details", label: "Details", value: formatValue(r.details) },
-        { key: "quantity", label: "Quantity", value: formatValue(r.quantity) },
-      ]);
+    for (const reportName of ["old_material_report", "new_material_report"]) {
+      const records = (await reportFieldService.readReport(orderId, reportName)) ?? [];
+
+      const bearingPositionsMap: Record<string, string> = {
+        FRONT_1: "Front 1",
+        FRONT_2: "Front 2",
+        REAR_1: "Rear 1",
+        REAR_2: "Rear 2",
+      };
+
+      const bearingRows = ["FRONT_1", "FRONT_2", "REAR_1", "REAR_2"].map((pos) => {
+        const r = records.find((rec: any) => rec.position === pos);
+        return [
+          { key: "position", label: "Position", value: bearingPositionsMap[pos] },
+          { key: "arrangement", label: "Arrangement", value: formatValue(r?.arrangement) },
+          { key: "details", label: "Details", value: formatValue(r?.details) },
+          { key: "quantity", label: "Quantity", value: formatValue(r?.quantity) },
+        ];
+      });
+
+      const sealRecord = records.find((rec: any) => rec.position === "SEAL");
+      const sealsList = Array.isArray(sealRecord?.seals) ? sealRecord.seals : [];
+      const sealRows =
+        sealsList.length > 0
+          ? sealsList.map((s: any) => [
+              { key: "seal", label: "Seal", value: formatValue(s.seal) },
+              { key: "details", label: "Details", value: formatValue(s.details) },
+              { key: "quantity", label: "Quantity", value: formatValue(s.quantity) },
+            ])
+          : [
+              [
+                { key: "seal", label: "Seal", value: "—" },
+                { key: "details", label: "Details", value: "—" },
+                { key: "quantity", label: "Quantity", value: "—" },
+              ],
+            ];
+
+      const oRingRecord = records.find((rec: any) => rec.position === "O_RING");
+      const oRingsList = Array.isArray(oRingRecord?.oRings) ? oRingRecord.oRings : [];
+      const oRingRows =
+        oRingsList.length > 0
+          ? oRingsList.map((o: any) => [
+              { key: "oRing", label: "O-Ring", value: formatValue(o.oRing) },
+              { key: "details", label: "Details", value: formatValue(o.details) },
+              { key: "quantity", label: "Quantity", value: formatValue(o.quantity) },
+            ])
+          : [
+              [
+                { key: "oRing", label: "O-Ring", value: "—" },
+                { key: "details", label: "Details", value: "—" },
+                { key: "quantity", label: "Quantity", value: "—" },
+              ],
+            ];
+
       sections.push({
-        reportName,
-        title: REPORT_DISPLAY_TITLES[reportName] ?? reportName,
+        reportName: `${reportName}_bearings`,
+        title: `${REPORT_DISPLAY_TITLES[reportName] ?? reportName} — Bearings`,
         kind: "multiRow",
-        rows,
+        rows: bearingRows,
+      });
+
+      sections.push({
+        reportName: `${reportName}_seals`,
+        title: `${REPORT_DISPLAY_TITLES[reportName] ?? reportName} — Seals`,
+        kind: "multiRow",
+        rows: sealRows,
+      });
+
+      sections.push({
+        reportName: `${reportName}_orings`,
+        title: `${REPORT_DISPLAY_TITLES[reportName] ?? reportName} — O-Rings`,
+        kind: "multiRow",
+        rows: oRingRows,
       });
     }
 

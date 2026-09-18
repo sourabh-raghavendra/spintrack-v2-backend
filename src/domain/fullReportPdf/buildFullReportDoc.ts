@@ -63,8 +63,12 @@ export function buildFullReportDoc(data: AssembledData): TDocumentDefinitions {
       }
       const headers = section.rows[0].map((r) => r.label);
       const tableWidths: Record<string, any[]> = {
-        old_bearing_report: [100, 150, 180, 50],
-        new_bearing_report: [100, 150, 180, 50],
+        old_material_report_bearings: [100, 150, 180, 50],
+        new_material_report_bearings: [100, 150, 180, 50],
+        old_material_report_seals: [150, 230, 100],
+        new_material_report_seals: [150, 230, 100],
+        old_material_report_orings: [150, 230, 100],
+        new_material_report_orings: [150, 230, 100],
         drawbar_details: [150, 175, 175],
         electrical_test: [120, 120, 120, 120],
         testing_balancing_trials: [50, 50, 50, 80, 80, 50, 50, 50],

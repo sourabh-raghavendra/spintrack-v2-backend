@@ -40,6 +40,7 @@ export interface IOrderRepository {
     createdById: string;
     customerContactId?: string | null;
     isUnderWarranty?: boolean;
+    previousJo?: string | null;
   }): Promise<Order>;
   update(
     id: string,
@@ -53,6 +54,7 @@ export interface IOrderRepository {
       spindleId: string;
       customerContactId: string | null;
       isUnderWarranty: boolean;
+      previousJo: string | null;
     }>,
   ): Promise<Order>;
   setStage(id: string, stage: OrderStage): Promise<Order>;

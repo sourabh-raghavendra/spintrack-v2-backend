@@ -5,13 +5,17 @@ enum BearingPosition {
   FRONT_2
   REAR_1
   REAR_2
-  MECHANICAL_SEAL
+  SEAL
+  O_RING
 }
 
 // ── Bearing ──────────────────────────────────────────────────────────
-// One shared table covers BOTH "old_bearing_report" and
-// "new_bearing_report" — isNew distinguishes them, avoiding two
-// near-duplicate tables. One row per (orderId, isNew, position).
+// One shared table covers BOTH "old_material_report" and
+// "new_material_report" — isNew distinguishes them.
+// One row per (orderId, isNew, position).
+// - FRONT_1, FRONT_2, REAR_1, REAR_2 use arrangement, details, quantity.
+// - SEAL uses seals Json array of { id, seal, details, quantity }.
+// - O_RING uses oRings Json array of { id, oRing, details, quantity }.
 
 model Bearing {
   id       String          @id @default(cuid())
@@ -22,6 +26,9 @@ model Bearing {
   arrangement String?
   details     String?
   quantity    String?
+
+  seals  Json?
+  oRings Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

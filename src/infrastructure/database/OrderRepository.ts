@@ -123,6 +123,7 @@ export class OrderRepository implements IOrderRepository {
     createdById: string;
     customerContactId?: string | null;
     isUnderWarranty?: boolean;
+    previousJo?: string | null;
   }): Promise<Order> {
     return prisma.order.create({
       data: {
@@ -138,6 +139,7 @@ export class OrderRepository implements IOrderRepository {
         createdById: data.createdById,
         customerContactId: data.customerContactId,
         isUnderWarranty: data.isUnderWarranty ?? false,
+        previousJo: data.previousJo,
         orderStage: OrderStage.RECEIVED,
       },
     });
@@ -155,6 +157,7 @@ export class OrderRepository implements IOrderRepository {
       spindleId: string;
       customerContactId: string | null;
       isUnderWarranty: boolean;
+      previousJo: string | null;
     }>,
   ): Promise<Order> {
     return prisma.order.update({
